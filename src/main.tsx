@@ -2,8 +2,6 @@ import React, { Suspense } from "react";
 import ReactDOM from "react-dom/client";
 import App from "./App.tsx";
 import "./App.css";
-import "@picocss/pico/css/pico.min.css";
-
 import {
   Repo,
   BroadcastChannelNetworkAdapter,
