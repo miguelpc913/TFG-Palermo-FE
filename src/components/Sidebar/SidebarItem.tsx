@@ -19,8 +19,7 @@ export default function SidebarItem({ docUrl }: Props) {
       setHash("");
     }
   };
-  // const docTitle = doc.blocks[0].type === "heading" ? doc.blocks[0].content[0] : "Untitled page";
-  // console.log(doc.blocks[0].content[0]);
+
   return (
     <div>
       <span

@@ -7,10 +7,13 @@ import {
   SidebarGroupContent,
   SidebarMenu,
   Sidebar,
+  SidebarMenuButton,
+  SidebarMenuItem,
 } from "../ui/sidebar";
 import { AutomergeUrl, useDocument } from "@automerge/react";
 import { Page } from "@/Types/Document";
 import SidebarNode from "./SidebarItem/SidebarNode";
+import NewPageButton from "./NewPageButton/NewPageButton";
 
 const ROOT_DOC_URL_KEY = "root-doc-url-4";
 
@@ -33,6 +36,11 @@ export default function AppSidebar() {
               <Suspense fallback={null}>
                 <SidebarRootChildren rootUrl={rootUrl} />
               </Suspense>
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild>
+                  <NewPageButton docUrl={rootUrl} />
+                </SidebarMenuButton>
+              </SidebarMenuItem>
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>

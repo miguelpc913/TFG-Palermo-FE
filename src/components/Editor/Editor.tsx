@@ -18,11 +18,11 @@ import "@blocknote/shadcn/style.css";
 import { createDocLink } from "../PageBlock/PageBlock";
 import { HiOutlineGlobeAlt } from "react-icons/hi";
 import { Page } from "@/Types/Document";
-import { ChangeFn, Doc, Repo, useRepo } from "@automerge/react";
+import { AutomergeUrl, ChangeFn, Repo, useDocument, useRepo } from "@automerge/react";
+import { useEffect } from "react";
 
 type Props = {
-  doc: Doc<Page>;
-  changeDoc: (changeFn: ChangeFn<Page>) => void;
+  selectedDocUrl: AutomergeUrl;
 };
 
 const insertNewPage = (
@@ -60,19 +60,21 @@ const getCustomSlashMenuItems = (
   insertNewPage(editor, changeDoc, repo),
 ];
 
-export default function Editor({ doc, changeDoc }: Props) {
+const schema = BlockNoteSchema.create({
+  inlineContentSpecs: {
+    // Adds all default inline content.
+    ...defaultInlineContentSpecs,
+    // Adds the mention tag
+  },
+  blockSpecs: {
+    ...defaultBlockSpecs,
+    docLink: createDocLink(),
+  },
+});
+
+export default function Editor({ selectedDocUrl }: Props) {
+  const [doc, changeDoc] = useDocument<Page>(selectedDocUrl, { suspense: true });
   const repo = useRepo();
-  const schema = BlockNoteSchema.create({
-    inlineContentSpecs: {
-      // Adds all default inline content.
-      ...defaultInlineContentSpecs,
-      // Adds the mention tag
-    },
-    blockSpecs: {
-      ...defaultBlockSpecs,
-      docLink: createDocLink(),
-    },
-  });
 
   const editor = useCreateBlockNote({
     initialContent: doc.blocks,
@@ -89,7 +91,6 @@ export default function Editor({ doc, changeDoc }: Props) {
     <BlockNoteView editor={editor} theme={"light"} onChange={handleEditorChange} slashMenu={false}>
       <SuggestionMenuController
         triggerCharacter={"/"}
-        // Replaces the default Slash Menu items with our custom ones.
         getItems={async query =>
           filterSuggestionItems(getCustomSlashMenuItems(editor, changeDoc, repo), query)
         }
