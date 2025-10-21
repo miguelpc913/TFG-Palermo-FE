@@ -39,6 +39,7 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <Suspense fallback={<div>Loading a document...</div>}>
       <RepoContext.Provider value={repo}>
+        test
         <App docUrl={window.handle.url} />
       </RepoContext.Provider>
     </Suspense>

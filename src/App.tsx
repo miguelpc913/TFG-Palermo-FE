@@ -14,7 +14,13 @@ function App({ docUrl }: { docUrl: AutomergeUrl }) {
 
   const handleNewPage = () => {
     const newPage = repo.create<Page>();
-    changeDoc(d => d.children.push(newPage.url));
+    changeDoc(d => {
+      if (d.children) {
+        d.children.push(newPage.url);
+      } else {
+        d.children = [newPage.url];
+      }
+    });
     setHash(newPage.url);
   };
 
@@ -22,7 +28,6 @@ function App({ docUrl }: { docUrl: AutomergeUrl }) {
   const selectedDocUrl =
     cleanHash && isValidAutomergeUrl(cleanHash) ? (cleanHash as AutomergeUrl) : null;
 
-  // 👇 Estado con retardo
   const [delayedDocUrl, setDelayedDocUrl] = useState<AutomergeUrl | null>(null);
 
   useEffect(() => {
@@ -39,8 +44,7 @@ function App({ docUrl }: { docUrl: AutomergeUrl }) {
     if (typeof doc.children === "undefined" || doc.children.length === 0) {
       handleNewPage();
     }
-  }, [doc]);
-
+  }, [doc.children?.length]);
   return (
     <>
       <SidebarProvider>
