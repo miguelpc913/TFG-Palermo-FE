@@ -32,9 +32,13 @@ export const SyncControls: React.FC<SyncControlsProps> = ({ docUrl }) => {
   };
 
   return (
-    <div className="sync-controls">
-      <button onClick={handleExport}>Copy account token</button>
-      <button onClick={() => setShowImportDialog(true)}>Import account token</button>
+    <div className="flex gap-1">
+      <button className="p-5 bg-cyan-500" onClick={handleExport}>
+        Copy account token
+      </button>
+      <button className="p-5 bg-cyan-500" onClick={() => setShowImportDialog(true)}>
+        Import account token
+      </button>
 
       {showImportDialog && (
         <dialog open>

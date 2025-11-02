@@ -9,13 +9,13 @@ export const setRootDocUrl = (url: AutomergeUrl): void => {
 
 export const getOrCreateRoot = (repo: Repo): AutomergeUrl => {
   // Check if we already have a root document
-  const existingId = localStorage.getItem(ROOT_DOC_URL_KEY);
+  const existingId = "automerge:3hf4GDwxXBYJ7xRU2DuJ35F9ar2T";
   if (existingId) {
     return existingId as AutomergeUrl;
   }
-
-  // Otherwise create one and (synchronously) store it
-  const root = repo.create<Page>({ blocks: [{}] });
-  localStorage.setItem(ROOT_DOC_URL_KEY, root.url);
-  return root.url;
+  // // Otherwise create one and (synchronously) store it
+  // const root = repo.create<Page>({ blocks: [{}] });
+  // localStorage.setItem(ROOT_DOC_URL_KEY, root.url);
+  // console.log("new root", root.url);
+  // return root.url;
 };

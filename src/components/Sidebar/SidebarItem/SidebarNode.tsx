@@ -4,7 +4,6 @@ import { Page } from "@/Types/Document";
 
 type Props = { docUrl: AutomergeUrl };
 
-/** Recursive component: each instance calls useDocument once (Rules of Hooks ✓) */
 export default function SidebarNode({ docUrl }: Props) {
   const [doc] = useDocument<Page>(docUrl, { suspense: true });
 
@@ -14,7 +13,6 @@ export default function SidebarNode({ docUrl }: Props) {
       : "Untitled page";
 
   const children = doc?.children || [];
-
   return (
     <>
       <SidebarMenuItem key={docUrl}>

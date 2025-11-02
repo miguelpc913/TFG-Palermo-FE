@@ -1,3 +1,7 @@
+import { useEffect, useRef } from "react";
+import isEqual from "fast-deep-equal"; // optional but helpful
+import { Page } from "@/Types/Document";
+import { AutomergeUrl, ChangeFn, Repo, useDocument, useRepo } from "@automerge/react";
 import {
   BlockNoteEditor,
   BlockNoteSchema,
@@ -6,20 +10,17 @@ import {
   filterSuggestionItems,
   insertOrUpdateBlock,
 } from "@blocknote/core";
-import "@blocknote/core/fonts/inter.css";
+import { BlockNoteView } from "@blocknote/shadcn";
 import {
+  useCreateBlockNote,
+  SuggestionMenuController,
   DefaultReactSuggestionItem,
   getDefaultReactSlashMenuItems,
-  SuggestionMenuController,
-  useCreateBlockNote,
 } from "@blocknote/react";
-import { BlockNoteView } from "@blocknote/shadcn";
-import "@blocknote/shadcn/style.css";
-import { createDocLink } from "../PageBlock/PageBlock";
 import { HiOutlineGlobeAlt } from "react-icons/hi";
-import { Page } from "@/Types/Document";
-import { AutomergeUrl, ChangeFn, Repo, useDocument, useRepo } from "@automerge/react";
-import { useEffect } from "react";
+import { createDocLink } from "../PageBlock/PageBlock";
+import "@blocknote/core/fonts/inter.css";
+import "@blocknote/shadcn/style.css";
 
 type Props = {
   selectedDocUrl: AutomergeUrl;
@@ -77,20 +78,48 @@ export default function Editor({ selectedDocUrl }: Props) {
   const repo = useRepo();
 
   const editor = useCreateBlockNote({
-    initialContent: doc.blocks,
+    initialContent: doc.blocks, // used only once (first mount)
     schema,
   });
 
-  const handleEditorChange = () => {
+  // Avoid echoing our own programmatic updates back into Automerge:
+  const applyingRemote = useRef(false);
+
+  // 1) Push Automerge -> BlockNote (remote changes)
+  useEffect(() => {
+    if (!editor) return;
+    if (isEqual(editor.document, doc.blocks)) return;
+
+    applyingRemote.current = true;
+    if (doc.blocks) {
+      editor.replaceBlocks(editor.document, doc.blocks);
+    }
+
+    applyingRemote.current = false;
+  }, [editor, doc.blocks]);
+
+  const saveEditor = () => {
     changeDoc(d => {
       d.blocks = editor.document;
     });
   };
 
+  const handleEditorChange = () => {
+    if (applyingRemote.current) return; // ignore our programmatic sync
+
+    saveEditor();
+  };
+
   return (
-    <BlockNoteView editor={editor} theme={"light"} onChange={handleEditorChange} slashMenu={false}>
+    <BlockNoteView
+      key={selectedDocUrl} // ensures a clean editor when switching docs
+      editor={editor}
+      theme="light"
+      onChange={handleEditorChange}
+      slashMenu={false}
+    >
       <SuggestionMenuController
-        triggerCharacter={"/"}
+        triggerCharacter="/"
         getItems={async query =>
           filterSuggestionItems(getCustomSlashMenuItems(editor, changeDoc, repo), query)
         }

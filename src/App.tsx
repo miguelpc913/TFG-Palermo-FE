@@ -1,5 +1,4 @@
 import { isValidAutomergeUrl, useDocument, useRepo, type AutomergeUrl } from "@automerge/react";
-import { SyncControls } from "./components/SyncControls";
 import AppSidebar from "./components/Sidebar/AppSidebar";
 import { SidebarProvider, SidebarTrigger } from "./components/ui/sidebar";
 import { Page } from "./Types/Document";
@@ -7,11 +6,14 @@ import { useHash } from "react-use";
 import { useEffect, useState } from "react";
 import Editor from "./components/Editor/Editor";
 
-function App({ docUrl }: { docUrl: AutomergeUrl }) {
-  const repo = useRepo();
-  const [doc, changeDoc] = useDocument<Page>(docUrl, { suspense: true });
-  const [hash, setHash] = useHash();
+type Props = {
+  rootDocUrl: AutomergeUrl;
+};
 
+function App({ rootDocUrl }: Props) {
+  const repo = useRepo();
+  const [doc, changeDoc] = useDocument<Page>(rootDocUrl, { suspense: true });
+  const [hash, setHash] = useHash();
   const handleNewPage = () => {
     const newPage = repo.create<Page>();
     changeDoc(d => {
@@ -44,14 +46,18 @@ function App({ docUrl }: { docUrl: AutomergeUrl }) {
     if (typeof doc.children === "undefined" || doc.children.length === 0) {
       handleNewPage();
     }
-  }, [doc.children?.length]);
+  }, [doc?.children?.length]);
+  console.log(doc);
   return (
     <>
-      <SidebarProvider>
+      <SidebarProvider open={true}>
         <AppSidebar />
         <main className="flex-1">
           <SidebarTrigger />
 
+          {selectedDocUrl === null ? (
+            <div className="p-4 text-sm text-muted-foreground">Selecciona un documento</div>
+          ) : null}
           {/* Opcional: placeholder mientras corre el delay */}
           {delayedDocUrl !== selectedDocUrl && (
             <div className="p-4 text-sm text-muted-foreground">Cargando editor…</div>
@@ -63,11 +69,6 @@ function App({ docUrl }: { docUrl: AutomergeUrl }) {
           ) : null}
         </main>
       </SidebarProvider>
-
-      <footer>
-        <SyncControls docUrl={docUrl} />
-        <p className="footer-copy">Powered by Automerge + Vite + React + TypeScript</p>
-      </footer>
     </>
   );
 }

@@ -15,15 +15,8 @@ import { Page } from "@/Types/Document";
 import SidebarNode from "./SidebarItem/SidebarNode";
 import NewPageButton from "./NewPageButton/NewPageButton";
 
-const ROOT_DOC_URL_KEY = "root-doc-url-4";
-
 export default function AppSidebar() {
-  const rootUrl =
-    typeof window !== "undefined"
-      ? (localStorage.getItem(ROOT_DOC_URL_KEY) as AutomergeUrl | null)
-      : null;
-
-  if (!rootUrl) return null;
+  const rootUrl = "automerge:3hf4GDwxXBYJ7xRU2DuJ35F9ar2T" as AutomergeUrl;
 
   return (
     <Sidebar>
@@ -51,14 +44,15 @@ export default function AppSidebar() {
 
 /** Loads the root doc once and renders *its children* as tree nodes */
 function SidebarRootChildren({ rootUrl }: { rootUrl: AutomergeUrl }) {
-  const [root] = useDocument<Page>(rootUrl, { suspense: true });
-  const children: AutomergeUrl[] = root.children || [];
-
+  const [root] = useDocument<Page>(rootUrl);
+  const children: AutomergeUrl[] = root?.children || [];
   return (
-    <>
+    <Suspense fallback={null}>
       {children.map(childUrl => (
-        <SidebarNode key={childUrl} docUrl={childUrl} />
+        <Suspense fallback={null} key={childUrl}>
+          <SidebarNode key={childUrl} docUrl={childUrl} />
+        </Suspense>
       ))}
-    </>
+    </Suspense>
   );
 }
