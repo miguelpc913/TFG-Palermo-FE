@@ -1,5 +1,5 @@
 import { AutomergeUrl, useDocument } from "@automerge/react";
-import { Page } from "../../Types/Document";
+import { Page } from "../../types/Document";
 import { useHash } from "react-use";
 
 type Props = {

@@ -1,4 +1,4 @@
-import { Page } from "@/Types/Document";
+import { Page } from "@/types/Document";
 import { AutomergeUrl, Repo } from "@automerge/react";
 
 const ROOT_DOC_URL_KEY = "root-doc-url-4";

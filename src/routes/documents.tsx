@@ -1,16 +1,15 @@
-import { isValidAutomergeUrl, useDocument, useRepo, type AutomergeUrl } from "@automerge/react";
-import AppSidebar from "./components/Sidebar/AppSidebar";
-import { SidebarProvider, SidebarTrigger } from "./components/ui/sidebar";
-import { Page } from "./Types/Document";
+import Editor from "@/components/Editor/Editor";
+import AppSidebar from "@/components/Sidebar/AppSidebar";
+import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import { Page } from "@/types/Document";
+import { AutomergeUrl, useRepo, useDocument, isValidAutomergeUrl } from "@automerge/react";
+import { useState, useEffect } from "react";
 import { useHash } from "react-use";
-import { useEffect, useState } from "react";
-import Editor from "./components/Editor/Editor";
+import { createFileRoute } from "@tanstack/react-router";
 
-type Props = {
-  rootDocUrl: AutomergeUrl;
-};
+const rootDocUrl = "automerge:3hf4GDwxXBYJ7xRU2DuJ35F9ar2T" as AutomergeUrl;
 
-function App({ rootDocUrl }: Props) {
+function Documents() {
   const repo = useRepo();
   const [doc, changeDoc] = useDocument<Page>(rootDocUrl, { suspense: true });
   const [hash, setHash] = useHash();
@@ -72,4 +71,6 @@ function App({ rootDocUrl }: Props) {
   );
 }
 
-export default App;
+export const Route = createFileRoute("/documents")({
+  component: Documents,
+});

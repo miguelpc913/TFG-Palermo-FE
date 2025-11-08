@@ -11,7 +11,7 @@ import {
   SidebarMenuItem,
 } from "../ui/sidebar";
 import { AutomergeUrl, useDocument } from "@automerge/react";
-import { Page } from "@/Types/Document";
+import { Page } from "@/types/Document";
 import SidebarNode from "./SidebarItem/SidebarNode";
 import NewPageButton from "./NewPageButton/NewPageButton";
 

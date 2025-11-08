@@ -1,20 +1,24 @@
 import React, { Suspense } from "react";
 import ReactDOM from "react-dom/client";
-import App from "./App.tsx";
 import "./App.css";
-import {
-  Repo,
-  BroadcastChannelNetworkAdapter,
-  WebSocketClientAdapter,
-  IndexedDBStorageAdapter,
-  RepoContext,
-  DocHandle,
-} from "@automerge/react";
-import { getOrCreateRoot } from "./utils/rootDoc.ts";
-import { Page } from "./Types/Document.ts";
+import { Repo, IndexedDBStorageAdapter, RepoContext, DocHandle } from "@automerge/react";
+import { Page } from "./types/Document.ts";
+import { RouterProvider, createRouter } from "@tanstack/react-router";
+
+// Import the generated route tree
+import { routeTree } from "./routeTree.gen";
+
+// Create a new router instance
+const router = createRouter({ routeTree });
+
+// Register the router instance for type safety
+declare module "@tanstack/react-router" {
+  interface Register {
+    router: typeof router;
+  }
+}
 
 // const ws = new WebSocketClientAdapter("wss://tfg-palermo-be.onrender.com/");
-
 const repo = new Repo({
   network: [
     // new WebSocketClientAdapter("ws://localhost:3030"),
@@ -34,7 +38,6 @@ declare global {
 }
 window.repo = repo;
 // Depending if we have an AutomergeUrl, either find or create the document
-const rootDocUrl = getOrCreateRoot(repo);
 
 async function init() {
   // await ws.whenReady();
@@ -43,7 +46,7 @@ async function init() {
     <React.StrictMode>
       <Suspense fallback={<div>Loading a document...</div>}>
         <RepoContext.Provider value={repo}>
-          <App rootDocUrl={rootDocUrl} />
+          <RouterProvider router={router} />
         </RepoContext.Provider>
       </Suspense>
     </React.StrictMode>

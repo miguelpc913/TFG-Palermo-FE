@@ -1,17 +1,14 @@
 import { useEffect, useRef } from "react";
 import isEqual from "fast-deep-equal"; // optional but helpful
-import { Page } from "@/Types/Document";
+import { Page } from "@/types/Document";
 import { AutomergeUrl, ChangeFn, Repo, useDocument, useRepo } from "@automerge/react";
 import {
-  Block,
   BlockNoteEditor,
   BlockNoteSchema,
-  createHeadingBlockSpec,
   defaultBlockSpecs,
   defaultInlineContentSpecs,
   filterSuggestionItems,
   insertOrUpdateBlock,
-  PartialBlock,
 } from "@blocknote/core";
 import { BlockNoteView } from "@blocknote/shadcn";
 import {
@@ -25,7 +22,6 @@ import { createDocLink } from "../PageBlock/PageBlock";
 import "@blocknote/core/fonts/inter.css";
 import "@blocknote/shadcn/style.css";
 import createHeadingBlock from "@/utils/createBlock";
-import { EditorProvider } from "@/providers/EditorContext";
 
 type Props = {
   selectedDocUrl: AutomergeUrl;
@@ -123,7 +119,6 @@ export default function Editor({ selectedDocUrl }: Props) {
           d.children.splice(deletedChildrenIndex, 1);
         }
       }
-
       d.blocks = editor.document;
     });
   };

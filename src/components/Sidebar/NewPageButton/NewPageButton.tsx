@@ -1,4 +1,4 @@
-import { Page } from "@/Types/Document";
+import { Page } from "@/types/Document";
 import { AutomergeUrl, useDocument, useRepo } from "@automerge/react";
 import { useHash } from "react-use";
 import { Plus } from "lucide-react";
