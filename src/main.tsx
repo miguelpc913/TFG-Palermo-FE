@@ -13,12 +13,12 @@ import {
 import { getOrCreateRoot } from "./utils/rootDoc.ts";
 import { Page } from "./Types/Document.ts";
 
-const ws = new WebSocketClientAdapter("wss://tfg-palermo-be.onrender.com/");
+// const ws = new WebSocketClientAdapter("wss://tfg-palermo-be.onrender.com/");
 
 const repo = new Repo({
   network: [
     // new WebSocketClientAdapter("ws://localhost:3030"),
-    ws,
+    // ws,
   ],
   storage: new IndexedDBStorageAdapter(),
 });
@@ -37,17 +37,17 @@ window.repo = repo;
 const rootDocUrl = getOrCreateRoot(repo);
 
 async function init() {
-  await ws.whenReady();
-  ws.on?.("peer-candidate", async () => {
-    ReactDOM.createRoot(document.getElementById("root")!).render(
-      <React.StrictMode>
-        <Suspense fallback={<div>Loading a document...</div>}>
-          <RepoContext.Provider value={repo}>
-            <App rootDocUrl={rootDocUrl} />
-          </RepoContext.Provider>
-        </Suspense>
-      </React.StrictMode>
-    );
-  });
+  // await ws.whenReady();
+  // ws.on?.("peer-candidate", async () => {
+  ReactDOM.createRoot(document.getElementById("root")!).render(
+    <React.StrictMode>
+      <Suspense fallback={<div>Loading a document...</div>}>
+        <RepoContext.Provider value={repo}>
+          <App rootDocUrl={rootDocUrl} />
+        </RepoContext.Provider>
+      </Suspense>
+    </React.StrictMode>
+  );
+  // });
 }
 init();

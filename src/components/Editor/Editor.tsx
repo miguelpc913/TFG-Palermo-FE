@@ -3,12 +3,15 @@ import isEqual from "fast-deep-equal"; // optional but helpful
 import { Page } from "@/Types/Document";
 import { AutomergeUrl, ChangeFn, Repo, useDocument, useRepo } from "@automerge/react";
 import {
+  Block,
   BlockNoteEditor,
   BlockNoteSchema,
+  createHeadingBlockSpec,
   defaultBlockSpecs,
   defaultInlineContentSpecs,
   filterSuggestionItems,
   insertOrUpdateBlock,
+  PartialBlock,
 } from "@blocknote/core";
 import { BlockNoteView } from "@blocknote/shadcn";
 import {
@@ -21,6 +24,8 @@ import { HiOutlineGlobeAlt } from "react-icons/hi";
 import { createDocLink } from "../PageBlock/PageBlock";
 import "@blocknote/core/fonts/inter.css";
 import "@blocknote/shadcn/style.css";
+import createHeadingBlock from "@/utils/createBlock";
+import { EditorProvider } from "@/providers/EditorContext";
 
 type Props = {
   selectedDocUrl: AutomergeUrl;
@@ -33,17 +38,16 @@ const insertNewPage = (
 ) => ({
   title: "Create new page",
   onItemClick: async () => {
-    const newPage = repo.create<Page>();
+    const newPage = repo.create<Page>({ children: [], blocks: [{}] });
     changeDoc(d => {
-      if (d.children) {
-        d.children.push(newPage.url);
-      } else {
-        d.children = [newPage.url];
-      }
+      d.children ? d.children.push(newPage.url) : (d.children = [newPage.url]);
     });
-    insertOrUpdateBlock(editor, {
-      type: "docLink",
-      content: [],
+    setTimeout(() => {
+      insertOrUpdateBlock(editor, {
+        type: "docLink",
+        props: { link: newPage.url, textAlignment: "left", textColor: "default" },
+        content: [{ type: "text", text: "Untitled page" }],
+      });
     });
   },
   aliases: ["Page", "new page"],
@@ -73,12 +77,13 @@ const schema = BlockNoteSchema.create({
   },
 });
 
+const emptyHeader = createHeadingBlock("");
+
 export default function Editor({ selectedDocUrl }: Props) {
   const [doc, changeDoc] = useDocument<Page>(selectedDocUrl, { suspense: true });
   const repo = useRepo();
-
   const editor = useCreateBlockNote({
-    initialContent: doc.blocks, // used only once (first mount)
+    initialContent: doc.blocks || [{ emptyHeader }], // used only once (first mount)
     schema,
   });
 
@@ -87,7 +92,6 @@ export default function Editor({ selectedDocUrl }: Props) {
 
   // 1) Push Automerge -> BlockNote (remote changes)
   useEffect(() => {
-    if (!editor) return;
     if (isEqual(editor.document, doc.blocks)) return;
 
     applyingRemote.current = true;
@@ -98,8 +102,28 @@ export default function Editor({ selectedDocUrl }: Props) {
     applyingRemote.current = false;
   }, [editor, doc.blocks]);
 
+  useEffect(() => {
+    if (editor.document.length !== doc.blocks.length) {
+    }
+  }, [editor.document]);
+
   const saveEditor = () => {
     changeDoc(d => {
+      const editorUrls = editor.document
+        .filter(block => block.type === "docLink")
+        .map(block => {
+          return block.props.link;
+        });
+      if (editorUrls.length !== d.children.length) {
+        const deletedChildrenIndex = d.children.findIndex(childUrl => {
+          return !editorUrls.includes(childUrl);
+        });
+        if (deletedChildrenIndex > -1) {
+          repo.delete(d.children[deletedChildrenIndex]);
+          d.children.splice(deletedChildrenIndex, 1);
+        }
+      }
+
       d.blocks = editor.document;
     });
   };
@@ -121,7 +145,10 @@ export default function Editor({ selectedDocUrl }: Props) {
       <SuggestionMenuController
         triggerCharacter="/"
         getItems={async query =>
-          filterSuggestionItems(getCustomSlashMenuItems(editor, changeDoc, repo), query)
+          filterSuggestionItems(
+            getCustomSlashMenuItems(editor, changeDoc, repo, selectedDocUrl),
+            query
+          )
         }
       />
     </BlockNoteView>

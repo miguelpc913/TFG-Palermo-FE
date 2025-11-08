@@ -1,5 +1,9 @@
-import { defaultProps } from "@blocknote/core";
+import { Page } from "@/Types/Document";
+import createHeadingBlock from "@/utils/createBlock";
+import { AutomergeUrl, useDocument } from "@automerge/react";
+import { Block, defaultProps } from "@blocknote/core";
 import { createReactBlockSpec } from "@blocknote/react";
+import { useEffect, useLayoutEffect, useRef } from "react";
 import { HiOutlineGlobeAlt } from "react-icons/hi";
 
 export const createDocLink = createReactBlockSpec(
@@ -8,6 +12,12 @@ export const createDocLink = createReactBlockSpec(
     propSchema: {
       textAlignment: defaultProps.textAlignment,
       textColor: defaultProps.textColor,
+      parentDoc: {
+        default: "#noParentFound",
+        type: "string",
+        editable: false,
+        description: "Parent document hash",
+      },
       link: {
         default: "#notAddedDoc",
         type: "string",
@@ -20,7 +30,48 @@ export const createDocLink = createReactBlockSpec(
   {
     render: props => {
       // Check if the link is internal or external
-      const link = props.block.props.link;
+      const link = props.block.props.link as AutomergeUrl;
+      const [doc, changeDoc] = useDocument<Page>(link, { suspense: true });
+      const hasBlockUpdate = useRef<boolean>(false);
+      const firstContentText =
+        props.block.content.length > 0 && typeof props.block.content[0]?.text === "string"
+          ? (props.block.content[0].text as string)
+          : "";
+
+      useEffect(() => {
+        // Update doc based on block
+        if (firstContentText !== "Untitled page" && hasBlockUpdate.current) {
+          changeDoc(d => {
+            let firstBlock = d?.blocks?.[0];
+            if (firstBlock?.type === "heading" && firstBlock?.content?.[0]?.text) {
+              firstBlock.content[0].text = firstContentText;
+            } else {
+              d.blocks = [];
+              d.blocks[0] = createHeadingBlock(firstContentText) as Block;
+            }
+          });
+        }
+      }, [firstContentText]);
+
+      useLayoutEffect(() => {
+        // Update block based on doc
+        let firstBlock = doc?.blocks?.[0];
+        if (firstBlock?.type === "heading" && firstBlock?.content?.[0]?.text) {
+          const newBlock = { ...props.block };
+          newBlock.content = [{ type: "text", text: firstBlock.content[0].text }];
+          props.editor.updateBlock(props.block.id, newBlock);
+        } else {
+          if (props.block.content[0].text !== "Untitled page") {
+            const newBlock = { ...props.block };
+            newBlock.content = [{ type: "text", text: "Untitled page" }];
+            props.editor.updateBlock(props.block.id, newBlock);
+          }
+        }
+        setTimeout(() => {
+          hasBlockUpdate.current = true;
+        });
+      }, []);
+
       return (
         <div className="flex items-center gap-1">
           <span contentEditable={false}>

@@ -47,7 +47,6 @@ function App({ rootDocUrl }: Props) {
       handleNewPage();
     }
   }, [doc?.children?.length]);
-  console.log(doc);
   return (
     <>
       <SidebarProvider open={true}>
