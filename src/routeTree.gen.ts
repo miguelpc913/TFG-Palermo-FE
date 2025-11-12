@@ -8,80 +8,80 @@
 // You should NOT make any changes in this file as it will be overwritten.
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
-import { Route as rootRouteImport } from "./routes/__root";
-import { Route as RegisterRouteImport } from "./routes/register";
-import { Route as DocumentsRouteImport } from "./routes/documents";
-import { Route as IndexRouteImport } from "./routes/index";
+import { Route as rootRouteImport } from './routes/__root'
+import { Route as RegisterRouteImport } from './routes/register'
+import { Route as DocumentsRouteImport } from './routes/documents'
+import { Route as IndexRouteImport } from './routes/index'
 
 const RegisterRoute = RegisterRouteImport.update({
-  id: "/register",
-  path: "/register",
+  id: '/register',
+  path: '/register',
   getParentRoute: () => rootRouteImport,
-} as any);
+} as any)
 const DocumentsRoute = DocumentsRouteImport.update({
-  id: "/documents",
-  path: "/documents",
+  id: '/documents',
+  path: '/documents',
   getParentRoute: () => rootRouteImport,
-} as any);
+} as any)
 const IndexRoute = IndexRouteImport.update({
-  id: "/",
-  path: "/",
+  id: '/',
+  path: '/',
   getParentRoute: () => rootRouteImport,
-} as any);
+} as any)
 
 export interface FileRoutesByFullPath {
-  "/": typeof IndexRoute;
-  "/documents": typeof DocumentsRoute;
-  "/register": typeof RegisterRoute;
+  '/': typeof IndexRoute
+  '/documents': typeof DocumentsRoute
+  '/register': typeof RegisterRoute
 }
 export interface FileRoutesByTo {
-  "/": typeof IndexRoute;
-  "/documents": typeof DocumentsRoute;
-  "/register": typeof RegisterRoute;
+  '/': typeof IndexRoute
+  '/documents': typeof DocumentsRoute
+  '/register': typeof RegisterRoute
 }
 export interface FileRoutesById {
-  __root__: typeof rootRouteImport;
-  "/": typeof IndexRoute;
-  "/documents": typeof DocumentsRoute;
-  "/register": typeof RegisterRoute;
+  __root__: typeof rootRouteImport
+  '/': typeof IndexRoute
+  '/documents': typeof DocumentsRoute
+  '/register': typeof RegisterRoute
 }
 export interface FileRouteTypes {
-  fileRoutesByFullPath: FileRoutesByFullPath;
-  fullPaths: "/" | "/documents" | "/register";
-  fileRoutesByTo: FileRoutesByTo;
-  to: "/" | "/documents" | "/register";
-  id: "__root__" | "/" | "/documents" | "/register";
-  fileRoutesById: FileRoutesById;
+  fileRoutesByFullPath: FileRoutesByFullPath
+  fullPaths: '/' | '/documents' | '/register'
+  fileRoutesByTo: FileRoutesByTo
+  to: '/' | '/documents' | '/register'
+  id: '__root__' | '/' | '/documents' | '/register'
+  fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-  IndexRoute: typeof IndexRoute;
-  DocumentsRoute: typeof DocumentsRoute;
-  RegisterRoute: typeof RegisterRoute;
+  IndexRoute: typeof IndexRoute
+  DocumentsRoute: typeof DocumentsRoute
+  RegisterRoute: typeof RegisterRoute
 }
 
-declare module "@tanstack/react-router" {
+declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    "/register": {
-      id: "/register";
-      path: "/register";
-      fullPath: "/register";
-      preLoaderRoute: typeof RegisterRouteImport;
-      parentRoute: typeof rootRouteImport;
-    };
-    "/documents": {
-      id: "/documents";
-      path: "/documents";
-      fullPath: "/documents";
-      preLoaderRoute: typeof DocumentsRouteImport;
-      parentRoute: typeof rootRouteImport;
-    };
-    "/": {
-      id: "/";
-      path: "/";
-      fullPath: "/";
-      preLoaderRoute: typeof IndexRouteImport;
-      parentRoute: typeof rootRouteImport;
-    };
+    '/register': {
+      id: '/register'
+      path: '/register'
+      fullPath: '/register'
+      preLoaderRoute: typeof RegisterRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/documents': {
+      id: '/documents'
+      path: '/documents'
+      fullPath: '/documents'
+      preLoaderRoute: typeof DocumentsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -89,7 +89,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   DocumentsRoute: DocumentsRoute,
   RegisterRoute: RegisterRoute,
-};
+}
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
-  ._addFileTypes<FileRouteTypes>();
+  ._addFileTypes<FileRouteTypes>()

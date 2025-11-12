@@ -17,12 +17,12 @@ function Documents() {
   const repo = useRepo();
   const [doc, changeDoc] = useDocument<Page>(rootDocUrl, { suspense: true });
   const [hash, setHash] = useHash();
-  const handleNewPage = () => {
+  const handleFirstDoc = () => {
     const newPage = repo.create<Page>();
     changeDoc(d => {
-      if (d.children) {
+      if (d.children && d.children.length === 0) {
         d.children.push(newPage.url);
-      } else {
+      } else if (typeof d.children === "undefined") {
         d.children = [newPage.url];
       }
     });
@@ -47,7 +47,7 @@ function Documents() {
 
   useEffect(() => {
     if (typeof doc.children === "undefined" || doc.children.length === 0) {
-      handleNewPage();
+      handleFirstDoc();
     }
   }, [doc?.children?.length]);
   return (

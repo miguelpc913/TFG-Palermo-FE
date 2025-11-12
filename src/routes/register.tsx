@@ -19,8 +19,8 @@ function Register() {
   const [isValid, setIsValid] = useState(false);
   const navigate = useNavigate();
   useEffect(() => {
-    setIsValid(validateEmail(email) && password.length > 3);
-  }, [email, password]);
+    setIsValid(validateEmail(email) && password.length > 3 && confirmPassword === password);
+  }, [email, password, confirmPassword]);
   const signUpHandler = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {

@@ -1,3 +1,4 @@
+import { useBackendHealth } from "@/hooks/useBackendHealth";
 import { Page } from "@/types/Document";
 import { WebSocketAuthAdapter } from "@/ws/WebSocketAuthAdapter";
 import {
@@ -37,27 +38,32 @@ type Props = {
 
 export default function RepoWrapper({ render, rootDocUrl }: Props) {
   const [shouldRender, setShouldRender] = useState(false);
-
+  const isHealthy = useBackendHealth(import.meta.env.VITE_API_URL);
   useEffect(() => {
     const connectToSocket = async () => {
+      console.log("connecting to socket");
       await ws.whenReady();
-      ws.on?.("peer-candidate", async () => {
-        setShouldRender(true);
-      });
+      setShouldRender(true);
     };
     const findRootDoc = async () => {
-      try {
-        const rootDoc = await repo.find(rootDocUrl);
-        if (rootDoc.state === "ready") {
-          setShouldRender(true);
+      const req = indexedDB.open("automerge-repo");
+      req.onsuccess = async () => {
+        try {
+          const rootDoc = await repo.find(rootDocUrl);
+          if (rootDoc.state === "ready") {
+            setShouldRender(true);
+          }
+        } catch (e) {
+          connectToSocket();
+          console.log("Root doc on local has not been found");
         }
-      } catch (e) {
-        console.log(e);
-      }
+      };
+      req.onerror = () => console.warn("IndexedDB not initialized yet");
     };
-    findRootDoc();
     connectToSocket();
-  }, []);
-
+    if (isHealthy === false) {
+      findRootDoc();
+    }
+  }, [isHealthy]);
   return shouldRender ? <RepoContext.Provider value={repo}>{render()}</RepoContext.Provider> : null;
 }

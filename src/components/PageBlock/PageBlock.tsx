@@ -4,7 +4,9 @@ import { AutomergeUrl, useDocument } from "@automerge/react";
 import { Block, defaultProps } from "@blocknote/core";
 import { createReactBlockSpec } from "@blocknote/react";
 import { useEffect, useLayoutEffect, useRef } from "react";
-import { HiOutlineGlobeAlt } from "react-icons/hi";
+import { IoDocumentTextOutline } from "react-icons/io5";
+
+import { useHash } from "react-use";
 
 export const createDocLink = createReactBlockSpec(
   {
@@ -37,7 +39,7 @@ export const createDocLink = createReactBlockSpec(
         props.block.content.length > 0 && typeof props.block.content[0]?.text === "string"
           ? (props.block.content[0].text as string)
           : "";
-
+      const [_, setHash] = useHash();
       useEffect(() => {
         // Update doc based on block
         if (firstContentText !== "Untitled page" && hasBlockUpdate.current) {
@@ -74,13 +76,24 @@ export const createDocLink = createReactBlockSpec(
 
       return (
         <div className="flex items-center gap-1">
-          <span contentEditable={false}>
-            <HiOutlineGlobeAlt />
-          </span>
+          <button
+            contentEditable={false}
+            onClick={() => {
+              setHash(link);
+            }}
+            style={{
+              cursor: "pointer",
+            }}
+          >
+            <IoDocumentTextOutline />
+          </button>
 
-          <a href={link}>
-            <div className={"inline-content"} ref={props.contentRef} />
-          </a>
+          <div
+            className={
+              "inline-content text-gray-800 underline underline-offset-2 transition-colors"
+            }
+            ref={props.contentRef}
+          />
         </div>
       );
     },
