@@ -1,0 +1,125 @@
+import { Button } from "@/components/ui/button";
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
+import { FieldGroup, Field, FieldLabel, FieldDescription } from "@/components/ui/field";
+import { Input } from "@/components/ui/input";
+import validateEmail from "@/utils/validateEmail";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
+
+type LoginResponseType = {
+  rootDocUrl: string;
+  token: string;
+};
+
+function Register() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [error, setError] = useState<Error>();
+  const [isValid, setIsValid] = useState(false);
+  const navigate = useNavigate();
+  useEffect(() => {
+    setIsValid(validateEmail(email) && password.length > 3);
+  }, [email, password]);
+  const signUpHandler = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    try {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/auth/register`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json;charset=UTF-8",
+        },
+        body: JSON.stringify({
+          email,
+          password,
+        }),
+      });
+      if (!response.ok) {
+        throw new Error(`Error code ${response.status}`);
+      }
+      const data: LoginResponseType = await response.json();
+      localStorage.setItem(import.meta.env.VITE_LOCAL_STORAGE_TOKEN_KEY, data.token);
+      localStorage.setItem(import.meta.env.VITE_LOCAL_STORAGE_ROOT_DOC_KEY, data.rootDocUrl);
+      navigate({
+        to: "/documents",
+      });
+    } catch (e) {
+      setError(e as Error);
+    }
+  };
+  return (
+    <div className="flex flex-col justify-between">
+      <div className={"flex flex-col gap-6 h-screen"}>
+        <Card className="m-auto w-120">
+          <CardHeader>
+            <CardTitle>Create a new account</CardTitle>
+            <CardDescription>Enter your email below for your new account</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={signUpHandler}>
+              <FieldGroup>
+                <Field>
+                  <FieldLabel htmlFor="email">Email</FieldLabel>
+                  <Input
+                    id="email"
+                    type="email"
+                    placeholder="m@example.com"
+                    required
+                    value={email}
+                    onChange={e => {
+                      const value = e.target.value;
+                      setEmail(value);
+                    }}
+                  />
+                </Field>
+                <Field>
+                  <div className="flex items-center">
+                    <FieldLabel htmlFor="password">Password</FieldLabel>
+                  </div>
+                  <Input
+                    id="password"
+                    type="password"
+                    required
+                    value={password}
+                    onChange={e => {
+                      const value = e.target.value;
+                      setPassword(value);
+                    }}
+                  />
+                </Field>
+                <Field>
+                  <div className="flex items-center">
+                    <FieldLabel htmlFor="confirmPassword">Confirm password</FieldLabel>
+                  </div>
+                  <Input
+                    id="confirmPassword"
+                    type="password"
+                    required
+                    value={confirmPassword}
+                    onChange={e => {
+                      const value = e.target.value;
+                      setConfirmPassword(value);
+                    }}
+                  />
+                </Field>
+                <Field>
+                  <Button type="submit" disabled={!isValid}>
+                    Sign up
+                  </Button>
+                  <FieldDescription className="text-center">
+                    Already have an account? <Link to="/">Log in</Link>
+                  </FieldDescription>
+                </Field>
+              </FieldGroup>
+            </form>
+            {error ? <span className="m-auto text-red-400">{error.message}</span> : null}
+          </CardContent>
+        </Card>
+      </div>
+    </div>
+  );
+}
+
+export const Route = createFileRoute("/register")({
+  component: Register,
+});
