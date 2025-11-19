@@ -1,4 +1,4 @@
-import React, { Suspense } from "react";
+import React from "react";
 import ReactDOM from "react-dom/client";
 import "./App.css";
 import { RouterProvider, createRouter } from "@tanstack/react-router";
@@ -10,14 +10,14 @@ declare module "@tanstack/react-router" {
     router: typeof router;
   }
 }
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
-async function init() {
-  ReactDOM.createRoot(document.getElementById("root")!).render(
-    <React.StrictMode>
-      <Suspense fallback={<div>Loading a document...</div>}>
-        <RouterProvider router={router} />
-      </Suspense>
-    </React.StrictMode>
-  );
-}
-init();
+const queryClient = new QueryClient();
+
+ReactDOM.createRoot(document.getElementById("root")!).render(
+  <React.StrictMode>
+    <QueryClientProvider client={queryClient}>
+      <RouterProvider router={router} />
+    </QueryClientProvider>
+  </React.StrictMode>
+);
