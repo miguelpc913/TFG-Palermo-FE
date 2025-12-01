@@ -1,3 +1,4 @@
+import Spinner from "@/components/Spinner/Spinner";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { FieldGroup, Field, FieldLabel, FieldDescription } from "@/components/ui/field";
@@ -5,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import validateEmail from "@/utils/validateEmail";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
 
 type LoginResponseType = {
   rootDocUrl: string;
@@ -15,14 +17,17 @@ function Register() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [error, setError] = useState<Error>();
   const [isValid, setIsValid] = useState(false);
   const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(false);
+
   useEffect(() => {
     setIsValid(validateEmail(email) && password.length > 3 && confirmPassword === password);
   }, [email, password, confirmPassword]);
+
   const signUpHandler = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setIsLoading(true);
     try {
       const response = await fetch(`${import.meta.env.VITE_API_URL}/auth/register`, {
         method: "POST",
@@ -44,9 +49,13 @@ function Register() {
         to: "/documents",
       });
     } catch (e) {
-      setError(e as Error);
+      const error = e as Error;
+      toast.error(error.message);
+    } finally {
+      setIsLoading(false);
     }
   };
+
   return (
     <div className="flex flex-col justify-between">
       <div className={"flex flex-col gap-6 h-screen"}>
@@ -103,8 +112,8 @@ function Register() {
                   />
                 </Field>
                 <Field>
-                  <Button type="submit" disabled={!isValid}>
-                    Sign up
+                  <Button type="submit" disabled={!isValid || isLoading}>
+                    {isLoading ? <Spinner height={"20px"} width={"20px"}></Spinner> : <>Sign up</>}
                   </Button>
                   <FieldDescription className="text-center">
                     Already have an account? <Link to="/">Log in</Link>
@@ -112,7 +121,6 @@ function Register() {
                 </Field>
               </FieldGroup>
             </form>
-            {error ? <span className="m-auto text-red-400">{error.message}</span> : null}
           </CardContent>
         </Card>
       </div>

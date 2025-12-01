@@ -22,6 +22,7 @@ import { createDocLink } from "../PageBlock/PageBlock";
 import "@blocknote/core/fonts/inter.css";
 import "@blocknote/shadcn/style.css";
 import createHeadingBlock from "@/utils/createBlock";
+import { en } from "@blocknote/core/locales";
 
 type Props = {
   selectedDocUrl: AutomergeUrl;

@@ -5,6 +5,7 @@ import { Separator } from "@/components/ui/separator";
 import { FaApple, FaLinux, FaWindows } from "react-icons/fa";
 import { useQuery } from "@tanstack/react-query";
 import { isTauri } from "@tauri-apps/api/core";
+import MergePad from "../../public/mergepad.svg";
 
 type ArtifactsDictionary = {
   windows?: string;
@@ -29,68 +30,7 @@ const HomePage = () => {
         <div className=" flex mx-20  items-center justify-between px-4 py-4">
           {/* Logo / Brand */}
           <div className="flex items-center gap-2">
-            <svg
-              width="40"
-              height="40"
-              viewBox="0 0 220 220"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <rect
-                x="20"
-                y="20"
-                width="180"
-                height="180"
-                rx="28"
-                stroke="#1F2937"
-                strokeWidth="10"
-                fill="white"
-              />
-
-              <path
-                d="M60 60L92 28"
-                stroke="#1F2937"
-                strokeWidth="10"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-
-              <path
-                d="M95 105L105 85L115 105L125 85L135 105"
-                stroke="#1F2937"
-                strokeWidth="10"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-
-              <line
-                x1="85"
-                y1="135"
-                x2="155"
-                y2="135"
-                stroke="#1F2937"
-                strokeWidth="10"
-                strokeLinecap="round"
-              />
-              <line
-                x1="85"
-                y1="160"
-                x2="155"
-                y2="160"
-                stroke="#1F2937"
-                strokeWidth="10"
-                strokeLinecap="round"
-              />
-              <line
-                x1="85"
-                y1="185"
-                x2="155"
-                y2="185"
-                stroke="#1F2937"
-                strokeWidth="10"
-                strokeLinecap="round"
-              />
-            </svg>
+            <MergePad />
 
             <div className="flex flex-col leading-tight">
               <span className="text-lg font-semibold tracking-tight">Mergepad</span>
@@ -103,7 +43,7 @@ const HomePage = () => {
             <Button variant="ghost" className="text-slate-700" asChild>
               <Link to="/login">Log in</Link>
             </Button>
-            <Button className=" text-white hover:bg-sky-500" asChild>
+            <Button className=" text-white " asChild>
               <Link to="/register">Sign up</Link>
             </Button>
           </nav>
@@ -133,7 +73,7 @@ const HomePage = () => {
             </div>
 
             <div className="flex flex-wrap items-center gap-3">
-              <Button size="lg" className=" text-white hover:bg-sky-500" asChild>
+              <Button size="lg" className=" text-white " asChild>
                 <Link to="/register">Start for free</Link>
               </Button>
 

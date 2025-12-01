@@ -41,7 +41,6 @@ export default function RepoWrapper({ render, rootDocUrl }: Props) {
   const isHealthy = useBackendHealth(import.meta.env.VITE_API_URL);
   useEffect(() => {
     const connectToSocket = async () => {
-      console.log("connecting to socket");
       await ws.whenReady();
       setShouldRender(true);
     };

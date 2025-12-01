@@ -7,6 +7,7 @@ import { useState, useEffect } from "react";
 import { useHash } from "react-use";
 import { createFileRoute, redirect } from "@tanstack/react-router";
 import RepoWrapper from "@/hoc/RepoWrapper";
+import ConnectionStatus from "@/components/ConnectionStatus/ConnectionStatus";
 
 const token = localStorage.getItem(import.meta.env.VITE_LOCAL_STORAGE_TOKEN_KEY);
 const rootDocUrl = localStorage.getItem(
@@ -38,6 +39,9 @@ function Documents() {
   useEffect(() => {
     // si no hay selección, limpiamos al instante
     if (!selectedDocUrl) {
+      if (doc.children && doc.children.length > 0) {
+        setHash(doc.children[0]);
+      }
       setDelayedDocUrl(null);
       return;
     }
@@ -50,12 +54,22 @@ function Documents() {
       handleFirstDoc();
     }
   }, [doc?.children?.length]);
+
+  useEffect(() => {
+    if (typeof doc.children === "undefined" || doc.children.length === 0) {
+      handleFirstDoc();
+    }
+  }, [doc?.children?.length]);
+
   return (
     <>
       <SidebarProvider open={true}>
         <AppSidebar rootDocUrl={rootDocUrl} />
         <main className="flex-1">
-          <SidebarTrigger />
+          <div className="flex justify-between m-2">
+            <SidebarTrigger />
+            <ConnectionStatus />
+          </div>
 
           {selectedDocUrl === null ? (
             <div className="p-4 text-sm text-muted-foreground">Selecciona un documento</div>
