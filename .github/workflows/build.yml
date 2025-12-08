@@ -105,78 +105,77 @@ jobs:
             src-tauri/target/aarch64-apple-darwin/release/bundle/macos/*.app
             src-tauri/target/aarch64-apple-darwin/release/bundle/dmg/*.dmg
 
-#   publish-android:
-#     runs-on: ubuntu-latest
-#     permissions:
-#       contents: write
-#     steps:
-#       - uses: actions/checkout@v4
+  publish-android:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
 
-#       - name: setup node
-#         uses: actions/setup-node@v4
-#         with:
-#           node-version: lts/*
+      - name: setup node
+        uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
 
-#       - name: Setup Java
-#         uses: actions/setup-java@v4
-#         with:
-#           distribution: "zulu"
-#           java-version: "17"
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: "zulu"
+          java-version: "17"
 
-#       - name: install Rust stable
-#         uses: dtolnay/rust-toolchain@stable
-#         with:
-#           targets: aarch64-linux-android,armv7-linux-androideabi,i686-linux-android,x86_64-linux-android
+      - name: install Rust stable
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: aarch64-linux-android,armv7-linux-androideabi,i686-linux-android,x86_64-linux-android
 
-#       - name: install dependencies
-#         run: |
-#           sudo apt-get update
-#           sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf
+      - name: install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf
 
-#       - name: install frontend dependencies
-#         run: npm install
+      - name: install frontend dependencies
+        run: npm install
 
-#       - name: Setup Android SDK
-#         uses: android-actions/setup-android@v3
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
 
-#       - name: Install NDK
-#         run: sdkmanager "ndk;27.0.11902837"
+      - name: Install NDK
+        run: sdkmanager "ndk;27.0.11902837"
 
-#       - name: Init tauri android
-#         run: npm run tauri android init
+      - name: Init tauri android
+        run: npm run tauri android init
 
-#       - name: setup Android signing
-#         run: |
-#           cd src-tauri/gen/android
-#           echo "keyAlias=${{ secrets.ANDROID_KEY_ALIAS }}" > keystore.properties
-#           echo "password=${{ secrets.ANDROID_KEY_PASSWORD }}" >> keystore.properties
-#           base64 -d <<< "${{ secrets.ANDROID_KEY_BASE64 }}" > $RUNNER_TEMP/keystore.jks
-#           echo "storeFile=$RUNNER_TEMP/keystore.jks" >> keystore.properties
+      - name: setup Android signing
+        run: |
+          cd src-tauri/gen/android
+          echo "keyAlias=${{ secrets.ANDROID_KEY_ALIAS }}" > keystore.properties
+          echo "password=${{ secrets.ANDROID_KEY_PASSWORD }}" >> keystore.properties
+          base64 -d <<< "${{ secrets.ANDROID_KEY_BASE64 }}" > $RUNNER_TEMP/keystore.jks
+          echo "storeFile=$RUNNER_TEMP/keystore.jks" >> keystore.properties
 
-#       - name: Extract android signing key from env
-#         run: |
-#           echo "${{ secrets.ANDROID_KEY_BASE64 }}" > src-tauri/gen/android/release.jks.base64
-#           base64 -d src-tauri/gen/android/release.jks.base64 > src-tauri/gen/android/release.decrypted.jks
+      - name: Extract android signing key from env
+        run: |
+          echo "${{ secrets.ANDROID_KEY_BASE64 }}" > src-tauri/gen/android/release.jks.base64
+          base64 -d src-tauri/gen/android/release.jks.base64 > src-tauri/gen/android/release.decrypted.jks
 
-#       - name: Build app bundle
-#         env:
-#           NDK_HOME: ${{ env.ANDROID_HOME }}/ndk/27.0.11902837
-#           TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
-#           TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
-#         run: npm run tauri android build
-#       - name: Sign APK
-#         run: |
-#           ${{ env.ANDROID_HOME }}/build-tools/34.0.0/apksigner sign --ks src-tauri/gen/android/release.decrypted.jks \
-#             --ks-key-alias ${{ secrets.ANDROID_KEY_ALIAS }} \
-#             --ks-pass pass:${{ secrets.ANDROID_KEY_PASSWORD }} \
-#             --key-pass pass:${{ secrets.ANDROID_KEY_PASSWORD }} \
-#             --out src-tauri/gen/android/app/build/outputs/apk/universal/release/app-universal-release-signed.apk \
-#             src-tauri/gen/android/app/build/outputs/apk/universal/release/app-universal-release-unsigned.apk
+      - name: Build app bundle
+        env:
+          NDK_HOME: ${{ env.ANDROID_HOME }}/ndk/27.0.11902837
+        run: npm run tauri android build
 
-#       - name: Upload Android Artifacts
-#         uses: actions/upload-artifact@v4
-#         with:
-#           name: tauri-android
-#           path: |
-#             src-tauri/gen/android/app/build/outputs/apk/universal/release/*.apk
-#             src-tauri/gen/android/app/build/outputs/bundle/universalRelease/*.aab
+      - name: Sign APK
+        run: |
+          ${{ env.ANDROID_HOME }}/build-tools/34.0.0/apksigner sign --ks src-tauri/gen/android/release.decrypted.jks \
+            --ks-key-alias ${{ secrets.ANDROID_KEY_ALIAS }} \
+            --ks-pass pass:${{ secrets.ANDROID_KEY_PASSWORD }} \
+            --key-pass pass:${{ secrets.ANDROID_KEY_PASSWORD }} \
+            --out src-tauri/gen/android/app/build/outputs/apk/universal/release/app-universal-release-signed.apk \
+            src-tauri/gen/android/app/build/outputs/apk/universal/release/app-universal-release-unsigned.apk
+
+      - name: Upload Android Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: tauri-android
+          path: |
+            src-tauri/gen/android/app/build/outputs/apk/universal/release/*.apk
+            src-tauri/gen/android/app/build/outputs/bundle/universalRelease/*.aab

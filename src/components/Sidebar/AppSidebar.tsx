@@ -1,5 +1,5 @@
 // AppSidebar.tsx
-import { Suspense } from "react";
+import { Suspense, useState } from "react";
 import {
   SidebarContent,
   SidebarGroup,
@@ -24,6 +24,7 @@ type Props = {
 
 export default function AppSidebar({ rootDocUrl }: Props) {
   const accountEmail = localStorage.getItem("email");
+  const [searchQuery, setSearchQuery] = useState("");
   return (
     <Sidebar>
       <SidebarHeader>
@@ -34,7 +35,12 @@ export default function AppSidebar({ rootDocUrl }: Props) {
           </div>
         ) : null}
 
-        <SearchForm />
+        <SearchForm
+          onChange={e => {
+            const value = e.target.value || "";
+            setSearchQuery(value);
+          }}
+        />
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
@@ -42,7 +48,7 @@ export default function AppSidebar({ rootDocUrl }: Props) {
             <SidebarMenu>
               {/* Suspense since useDocument is used with suspense: true */}
               <Suspense fallback={null}>
-                <SidebarRootChildren rootUrl={rootDocUrl} />
+                <SidebarRootChildren rootUrl={rootDocUrl} searchQuery={searchQuery} />
               </Suspense>
               <SidebarMenuItem>
                 <SidebarMenuButton asChild>
@@ -58,14 +64,20 @@ export default function AppSidebar({ rootDocUrl }: Props) {
 }
 
 /** Loads the root doc once and renders *its children* as tree nodes */
-function SidebarRootChildren({ rootUrl }: { rootUrl: AutomergeUrl }) {
+function SidebarRootChildren({
+  rootUrl,
+  searchQuery,
+}: {
+  rootUrl: AutomergeUrl;
+  searchQuery: string;
+}) {
   const [root] = useDocument<Page>(rootUrl);
   const children: AutomergeUrl[] = root?.children || [];
   return (
     <Suspense fallback={null}>
       {children.map(childUrl => (
         <Suspense fallback={null} key={childUrl}>
-          <SidebarNode key={childUrl} docUrl={childUrl} />
+          <SidebarNode key={childUrl} docUrl={childUrl} searchQuery={searchQuery} />
         </Suspense>
       ))}
     </Suspense>
