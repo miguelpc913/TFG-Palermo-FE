@@ -2,7 +2,7 @@ import { Link, createFileRoute, redirect } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { FaApple, FaLinux, FaWindows } from "react-icons/fa";
+import { FaAndroid, FaApple, FaLinux, FaWindows } from "react-icons/fa";
 import { useQuery } from "@tanstack/react-query";
 import { isTauri } from "@tauri-apps/api/core";
 import MergePad from "../../public/mergepad.svg";
@@ -11,6 +11,7 @@ type ArtifactsDictionary = {
   windows?: string;
   linux?: string;
   macOs?: string;
+  android?: string;
 };
 
 const HomePage = () => {
@@ -94,8 +95,11 @@ const HomePage = () => {
               Fully local-first · Sync on your terms · Built for power users
             </p>
           </div>
-
-          {/* Download cards */}
+          <div className="flex-1 space-y-4 rounded-2xl  ">
+            <img src="/public/AppDemo.png" />
+          </div>
+        </section>
+        <section className="mx-20 flex  flex-col gap-10 px-4 py-12 lg:flex-row lg:items-center">
           <div
             id="downloads"
             className="flex-1 space-y-4 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm"
@@ -105,7 +109,7 @@ const HomePage = () => {
               Choose your platform and bring your CRDT-powered workspace to the desktop.
             </p>
 
-            <div className="grid gap-4 md:grid-cols-3">
+            <div className="grid gap-4 md:grid-cols-4">
               {/* Windows */}
               <Card className="border-slate-200 bg-slate-50">
                 <CardHeader className="space-y-1 pb-3">
@@ -201,6 +205,36 @@ const HomePage = () => {
                   >
                     {/* Replace with real link */}
                     <p>Download AppImage</p>
+                  </Button>
+                </CardContent>
+              </Card>
+              <Card className="border-slate-200 bg-slate-50">
+                <CardHeader className="space-y-1 pb-3">
+                  <CardTitle className="flex items-center gap-2 text-base">
+                    <span className="text-2xl">
+                      <FaAndroid />
+                    </span>
+                    <span>Android</span>
+                  </CardTitle>
+                  <CardDescription>Download APK</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-2 mt-auto">
+                  <Button
+                    variant="outline"
+                    className={`w-full border-slate-300 bg-white text-slate-800 hover:bg-slate-50 ${
+                      artifactsQuery.data?.android
+                        ? "cursor-pointer"
+                        : "bg-gray-400 cursor-not-allowed hover:bg-gray-400"
+                    }`}
+                    disabled={!artifactsQuery.data?.android}
+                    onClick={() => {
+                      if (artifactsQuery.data?.android) {
+                        window.open(artifactsQuery.data?.android);
+                      }
+                    }}
+                  >
+                    {/* Replace with real link */}
+                    <p>Download APK</p>
                   </Button>
                 </CardContent>
               </Card>

@@ -45,6 +45,7 @@ function Register() {
       const data: LoginResponseType = await response.json();
       localStorage.setItem(import.meta.env.VITE_LOCAL_STORAGE_TOKEN_KEY, data.token);
       localStorage.setItem(import.meta.env.VITE_LOCAL_STORAGE_ROOT_DOC_KEY, data.rootDocUrl);
+      localStorage.setItem("email", email);
       navigate({
         to: "/documents",
       });

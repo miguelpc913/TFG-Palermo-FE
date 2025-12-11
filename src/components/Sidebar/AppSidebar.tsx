@@ -27,7 +27,7 @@ export default function AppSidebar({ rootDocUrl }: Props) {
   const [searchQuery, setSearchQuery] = useState("");
   return (
     <Sidebar>
-      <SidebarHeader>
+      <SidebarHeader className="border-b-1 border-b-gray-200">
         {accountEmail ? (
           <div className="flex gap-2 m-2">
             <EmailLogo email={accountEmail} size="sm" />
@@ -41,6 +41,7 @@ export default function AppSidebar({ rootDocUrl }: Props) {
             setSearchQuery(value);
           }}
         />
+        <NewPageButton docUrl={rootDocUrl} />
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
@@ -50,11 +51,6 @@ export default function AppSidebar({ rootDocUrl }: Props) {
               <Suspense fallback={null}>
                 <SidebarRootChildren rootUrl={rootDocUrl} searchQuery={searchQuery} />
               </Suspense>
-              <SidebarMenuItem>
-                <SidebarMenuButton asChild>
-                  <NewPageButton docUrl={rootDocUrl} />
-                </SidebarMenuButton>
-              </SidebarMenuItem>
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
