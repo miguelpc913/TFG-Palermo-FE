@@ -46,6 +46,7 @@ export const createDocLink = createReactBlockSpec(
             className={
               "inline-content text-gray-800 underline underline-offset-2 transition-colors"
             }
+            contentEditable={false}
           >
             {headingText}
           </div>

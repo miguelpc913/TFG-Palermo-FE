@@ -27,6 +27,14 @@ export class WebSocketAuthAdapter extends WebSocketNetworkAdapter {
   #readyPromise: Promise<void> = new Promise<void>(resolve => {
     this.#readyResolver = resolve;
   });
+  #handshakeResolver?: () => void;
+  #handshakePromise = new Promise<void>(resolve => {
+    this.#handshakeResolver = resolve;
+  });
+
+  whenOperational() {
+    return this.#handshakePromise;
+  }
 
   // reconnect
   #retryIntervalId?: TimeoutId;
@@ -126,7 +134,7 @@ export class WebSocketAuthAdapter extends WebSocketNetworkAdapter {
     this.socket.addEventListener("error", this.onError);
 
     // Don't block readiness forever if no ack comes back
-    setTimeout(() => this.#forceReady(), 1000);
+    // setTimeout(() => this.#forceReady(), 1000);
 
     // Try to join immediately (if OPEN it'll send; otherwise onOpen will)
     this.join();
@@ -146,7 +154,6 @@ export class WebSocketAuthAdapter extends WebSocketNetworkAdapter {
     // Detect auth/policy close (1008) or any auth-looking reason
     const reason = (event?.reason || "").toLowerCase();
     if (event && (event.code === 1008 || reason.includes("auth"))) {
-      console.log("detected auth");
       this.emit("close");
       // Optionally: stop retries until app refreshes token.
       clearInterval(this.#retryIntervalId);
@@ -154,6 +161,7 @@ export class WebSocketAuthAdapter extends WebSocketNetworkAdapter {
       if (reason === "auth error") {
         toast.error("Invalid token");
       }
+      localStorage.removeItem(import.meta.env.VITE_LOCAL_STORAGE_TOKEN_KEY);
       redirectToLogin();
       return;
     }
@@ -170,6 +178,7 @@ export class WebSocketAuthAdapter extends WebSocketNetworkAdapter {
 
   onMessage = (event: WebSocket.MessageEvent) => {
     // event.data may be ArrayBuffer/Uint8Array/string (we encode binary)
+
     this.receiveMessage(event.data as Uint8Array);
   };
 
@@ -239,6 +248,11 @@ export class WebSocketAuthAdapter extends WebSocketNetworkAdapter {
     let message: FromServerMessage;
     try {
       message = cbor.decode(new Uint8Array(messageBytes));
+      if (message.type === "joined") {
+        this.#handshakeResolver?.();
+        this.#forceReady(); // optional to keep your existing api
+        return;
+      }
     } catch (e) {
       this.#log("error decoding message:", e);
       return;

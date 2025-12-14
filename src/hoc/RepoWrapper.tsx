@@ -42,11 +42,19 @@ export default function RepoWrapper({ render, rootDocUrl }: Props) {
   const isHealthy = useBackendHealth();
   useEffect(() => {
     const connectToSocket = async () => {
-      await ws.whenReady();
-      setShouldRender(true);
+      await ws.whenOperational();
+      try {
+        const doc = await repo.find(rootDocUrl);
+        if (doc.state === "ready") {
+          setShouldRender(true);
+          return;
+        }
+      } catch (e) {
+        console.log(e);
+      }
     };
     const findRootDoc = async () => {
-      const req = indexedDB.open("automerge-repo");
+      const req = indexedDB.open("automerge");
       req.onsuccess = async () => {
         try {
           const rootDoc = await repo.find(rootDocUrl);
@@ -65,6 +73,7 @@ export default function RepoWrapper({ render, rootDocUrl }: Props) {
       findRootDoc();
     }
   }, [isHealthy]);
+  console.log(shouldRender, "repo wrapper should render");
   return shouldRender ? (
     <RepoContext.Provider value={repo}>{render()}</RepoContext.Provider>
   ) : (

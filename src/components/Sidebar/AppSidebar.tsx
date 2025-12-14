@@ -19,7 +19,7 @@ type Props = {
 };
 
 export default function AppSidebar({ rootDocUrl }: Props) {
-  const [root] = useDocument<Page>(rootDocUrl);
+  const [root] = useDocument<Page>(rootDocUrl, { suspense: true });
   const children: AutomergeUrl[] = root?.children || [];
   const [searchQuery, setSearchQuery] = useState("");
   return (
