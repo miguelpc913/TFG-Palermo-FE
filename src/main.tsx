@@ -13,6 +13,12 @@ declare module "@tanstack/react-router" {
   }
 }
 
+export function redirectToLogin() {
+  router.navigate({
+    to: "/login",
+  });
+}
+
 const queryClient = new QueryClient();
 
 ReactDOM.createRoot(document.getElementById("root")!).render(

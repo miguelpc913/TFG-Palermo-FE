@@ -59,7 +59,7 @@ function Login() {
   return (
     <div className="flex flex-col justify-between">
       <div className={"flex flex-col gap-6 h-screen"}>
-        <Card className="m-auto w-120">
+        <Card className="m-auto sm:w-120 w-[90%]">
           <CardHeader>
             <CardTitle>Login to your account</CardTitle>
             <CardDescription>Enter your email below to login to your account</CardDescription>

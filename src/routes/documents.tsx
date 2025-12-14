@@ -19,7 +19,7 @@ function Documents() {
   const [hash, setHash] = useHash();
   const handleFirstDoc = () => {
     const newPage = repo.create<Page>();
-    changeDoc(d => {
+    changeDoc((d: Page) => {
       if (d.children && d.children.length === 0) {
         d.children.push(newPage.url);
       } else if (typeof d.children === "undefined") {
@@ -46,7 +46,7 @@ function Documents() {
       handleFirstDoc();
     }
   }, [doc?.children?.length]);
-
+  if (!rootDocUrl) return;
   return (
     <>
       <SidebarProvider open={true}>
@@ -65,16 +65,17 @@ function Documents() {
 }
 
 const WrappedDocuments = () => {
-  if (token !== null && isValidAutomergeUrl(rootDocUrl)) {
+  if (token !== null && isValidAutomergeUrl(rootDocUrl) && rootDocUrl) {
     return <RepoWrapper render={() => <Documents />} rootDocUrl={rootDocUrl}></RepoWrapper>;
   }
 };
 export const Route = createFileRoute("/documents")({
   component: WrappedDocuments,
   beforeLoad: async () => {
-    if (token === null && isValidAutomergeUrl(rootDocUrl)) {
+    if ((token === null || !isValidAutomergeUrl(rootDocUrl)) && rootDocUrl) {
+      localStorage.removeItem(import.meta.env.VITE_LOCAL_STORAGE_TOKEN_KEY);
       throw redirect({
-        to: "/",
+        to: "/login",
       });
     }
   },

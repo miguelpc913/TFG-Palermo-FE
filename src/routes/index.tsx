@@ -28,14 +28,16 @@ const HomePage = () => {
     <div className="min-h-screen flex flex-col bg-gradient-to-b from-slate-50 via-slate-100 to-white text-slate-900">
       {/* HEADER */}
       <header className="border-b border-slate-200 bg-white/80 backdrop-blur">
-        <div className=" flex mx-20  items-center justify-between px-4 py-4">
+        <div className=" flex mx-7 md:mx-20  items-center justify-between md:px-4 py-4">
           {/* Logo / Brand */}
           <div className="flex items-center gap-2">
             <MergePad />
 
             <div className="flex flex-col leading-tight">
               <span className="text-lg font-semibold tracking-tight">Mergepad</span>
-              <span className="text-xs text-slate-500">Offline-first, CRDT-powered workspace</span>
+              <span className="text-xs text-slate-500 hidden md:inline-block">
+                Offline-first, CRDT-powered workspace
+              </span>
             </div>
           </div>
 
@@ -53,7 +55,7 @@ const HomePage = () => {
 
       {/* MAIN */}
       <main className="flex-1">
-        <section className="mx-20 flex  flex-col gap-10 px-4 py-12 lg:flex-row lg:items-center">
+        <section className="mx-7 md:mx-20 flex  flex-col gap-10 px-4 md:py-12 py-6 lg:flex-row lg:items-center">
           {/* Hero text */}
           <div className="flex-1 space-y-6">
             <div className="inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-medium text-emerald-700">
@@ -95,11 +97,11 @@ const HomePage = () => {
               Fully local-first · Sync on your terms · Built for power users
             </p>
           </div>
-          <div className="flex-1 space-y-4 rounded-2xl  ">
+          <div className="flex-1 space-y-4 rounded-2xl hidden md:inline-block">
             <img src="/AppDemo.png" />
           </div>
         </section>
-        <section className="mx-20 flex  flex-col gap-10 px-4 py-12 lg:flex-row lg:items-center">
+        <section className="mx-7 md:mx-20 flex  flex-col gap-10 px-4 md:py-12  lg:flex-row lg:items-center">
           <div
             id="downloads"
             className="flex-1 space-y-4 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm"
@@ -250,7 +252,7 @@ const HomePage = () => {
 
       {/* FOOTER */}
       <footer className="border-t border-slate-200 bg-white/80">
-        <div className=" flex mx-20  flex-col gap-4 px-4 py-5 text-sm text-slate-500 md:flex-row md:items-center md:justify-between">
+        <div className=" flex mx-7 md:mx-20  flex-col gap-4 px-4 py-5 text-sm text-slate-500 md:flex-row md:items-center md:justify-between">
           <div className="flex items-center gap-2">
             <span className="text-xs">&copy; {new Date().getFullYear()}</span>
             <Separator orientation="vertical" className="h-4 bg-slate-300" />

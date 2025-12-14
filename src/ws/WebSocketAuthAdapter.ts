@@ -10,6 +10,8 @@ import {
 import { ProtocolV1 } from "./protocolVersion.js";
 import { assert } from "./assert.js";
 import { toArrayBuffer } from "./toArrayBuffer.js";
+import { redirectToLogin } from "@/main";
+import { toast } from "sonner";
 
 type TimeoutId = ReturnType<typeof setTimeout>;
 type GetToken = () => string | Promise<string>;
@@ -138,16 +140,22 @@ export class WebSocketAuthAdapter extends WebSocketNetworkAdapter {
   };
 
   onClose = (event?: WebSocket.CloseEvent) => {
+    console.log(event);
     this.#log("close");
 
     // Detect auth/policy close (1008) or any auth-looking reason
     const reason = (event?.reason || "").toLowerCase();
     if (event && (event.code === 1008 || reason.includes("auth"))) {
+      console.log("detected auth");
       this.emit("close");
       // Optionally: stop retries until app refreshes token.
-      // clearInterval(this.#retryIntervalId);
-      // this.#retryIntervalId = undefined;
-      // return;
+      clearInterval(this.#retryIntervalId);
+      this.#retryIntervalId = undefined;
+      if (reason === "auth error") {
+        toast.error("Invalid token");
+      }
+      redirectToLogin();
+      return;
     }
 
     if (this.remotePeerId) this.emit("peer-disconnected", { peerId: this.remotePeerId });
@@ -167,7 +175,6 @@ export class WebSocketAuthAdapter extends WebSocketNetworkAdapter {
 
   /** Browser vs Node error signatures differ; handle both. */
   onError = (event: Event) => {
-    console.log(event);
     if ("error" in event) {
       // Node: we might see ECONNREFUSED etc.
       if ((event.error as any)?.code !== "ECONNREFUSED") {
@@ -176,6 +183,7 @@ export class WebSocketAuthAdapter extends WebSocketNetworkAdapter {
       }
     } else {
       // Browser: details are intentionally opaque
+      console.log("browser error");
     }
     this.#log("connection error; will retry if enabled…");
   };

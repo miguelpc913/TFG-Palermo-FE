@@ -59,7 +59,7 @@ function Register() {
   return (
     <div className="flex flex-col justify-between">
       <div className={"flex flex-col gap-6 h-screen"}>
-        <Card className="m-auto w-120">
+        <Card className="m-auto sm:w-120 w-[90%]">
           <CardHeader>
             <CardTitle>Create a new account</CardTitle>
             <CardDescription>Enter your email below for your new account</CardDescription>
@@ -116,7 +116,7 @@ function Register() {
                     {isLoading ? <Spinner height={"20px"} width={"20px"}></Spinner> : <>Sign up</>}
                   </Button>
                   <FieldDescription className="text-center">
-                    Already have an account? <Link to="/">Log in</Link>
+                    Already have an account? <Link to="/login">Log in</Link>
                   </FieldDescription>
                 </Field>
               </FieldGroup>
