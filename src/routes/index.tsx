@@ -96,7 +96,7 @@ const HomePage = () => {
             </p>
           </div>
           <div className="flex-1 space-y-4 rounded-2xl  ">
-            <img src="/public/AppDemo.png" />
+            <img src="/AppDemo.png" />
           </div>
         </section>
         <section className="mx-20 flex  flex-col gap-10 px-4 py-12 lg:flex-row lg:items-center">

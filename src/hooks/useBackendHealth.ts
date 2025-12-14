@@ -1,6 +1,9 @@
 import { useEffect, useState } from "react";
 
-export function useBackendHealth(baseUrl: string, intervalMs = 5000) {
+export function useBackendHealth(
+  baseUrl: string = import.meta.env.VITE_API_URL,
+  intervalMs = 5000
+) {
   const [isHealthy, setIsHealthy] = useState<boolean | null>(null); // null = checking
 
   useEffect(() => {

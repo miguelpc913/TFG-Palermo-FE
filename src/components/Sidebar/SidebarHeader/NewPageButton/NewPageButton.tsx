@@ -2,6 +2,8 @@ import { Page } from "@/types/Document";
 import { AutomergeUrl, useDocument, useRepo } from "@automerge/react";
 import { useHash } from "react-use";
 import { Plus } from "lucide-react";
+import createHeadingBlock from "@/utils/createBlock";
+import { Block } from "@blocknote/core";
 
 export default function NewPageButton({ docUrl }: { docUrl: AutomergeUrl }) {
   const [__, changeDoc] = useDocument<Page>(docUrl, {
@@ -9,7 +11,8 @@ export default function NewPageButton({ docUrl }: { docUrl: AutomergeUrl }) {
   });
   const repo = useRepo();
   const handleNewPage = () => {
-    const newPage = repo.create<Page>();
+    const headingBlock = createHeadingBlock("") as Block;
+    const newPage = repo.create<Page>({ blocks: [headingBlock] });
     changeDoc(d => d.children.push(newPage.url));
     setHash(newPage.url);
   };

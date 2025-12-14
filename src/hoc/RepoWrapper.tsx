@@ -38,7 +38,7 @@ type Props = {
 
 export default function RepoWrapper({ render, rootDocUrl }: Props) {
   const [shouldRender, setShouldRender] = useState(false);
-  const isHealthy = useBackendHealth(import.meta.env.VITE_API_URL);
+  const isHealthy = useBackendHealth();
   useEffect(() => {
     const connectToSocket = async () => {
       await ws.whenReady();

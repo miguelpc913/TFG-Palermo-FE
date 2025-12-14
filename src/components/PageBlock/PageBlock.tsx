@@ -1,11 +1,8 @@
-import { Page } from "@/types/Document";
-import createHeadingBlock from "@/utils/createBlock";
-import { AutomergeUrl, useDocument } from "@automerge/react";
-import { Block, defaultProps } from "@blocknote/core";
+import { AutomergeUrl } from "@automerge/react";
+import { defaultProps } from "@blocknote/core";
 import { createReactBlockSpec } from "@blocknote/react";
-import { useEffect, useLayoutEffect, useRef } from "react";
 import { IoDocumentTextOutline } from "react-icons/io5";
-import { useHash } from "react-use";
+import usePageBlock from "./Hooks/usePageBlock";
 
 export const createDocLink = createReactBlockSpec(
   {
@@ -32,64 +29,16 @@ export const createDocLink = createReactBlockSpec(
     render: props => {
       // Check if the link is internal or external
       const link = props.block.props.link as AutomergeUrl;
-      const [doc, changeDoc] = useDocument<Page>(link);
-      const hasBlockUpdate = useRef<boolean>(false);
-      const linkText =
-        props.block.content.length > 0 && typeof props.block.content[0]?.text === "string"
-          ? (props.block.content[0].text as string)
-          : "";
-      const [_, setHash] = useHash();
-
-      useEffect(() => {
-        // Update doc based on block
-        if (linkText !== "Untitled page" && hasBlockUpdate.current) {
-          changeDoc(d => {
-            let firstBlock = d?.blocks?.[0];
-            if (firstBlock?.type === "heading" && firstBlock?.content?.[0]?.text) {
-              firstBlock.content[0].text = linkText;
-            } else {
-              d.blocks = [];
-              d.blocks[0] = createHeadingBlock(linkText) as Block;
-            }
-          });
-        }
-      }, [linkText]);
-
-      useLayoutEffect(() => {
-        // Update block based on doc
-        let firstBlockOfDoc = doc?.blocks?.[0];
-        if (firstBlockOfDoc?.type === "heading" && firstBlockOfDoc?.content?.[0]?.text) {
-          const headingText = firstBlockOfDoc?.content?.[0]?.text;
-          if (linkText !== headingText) {
-            const newBlock = { ...props.block };
-            newBlock.content = [{ type: "text", text: firstBlockOfDoc.content[0].text }];
-            props.editor.updateBlock(props.block.id, newBlock);
-          }
-        } else if (
-          props.block.content.length > 0 &&
-          props.block.content[0].text !== "Untitled page"
-        ) {
-          const newBlock = { ...props.block };
-          newBlock.content = [{ type: "text", text: "Untitled page" }];
-          props.editor.updateBlock(props.block.id, newBlock);
-        }
-
-        setTimeout(() => {
-          hasBlockUpdate.current = true;
-        });
-      }, []);
-
+      const { headingText, onClickHandler } = usePageBlock({ link });
       return (
-        <div className="flex items-center gap-1">
-          <button
-            contentEditable={false}
-            onClick={() => {
-              setHash(link);
-            }}
-            style={{
-              cursor: "pointer",
-            }}
-          >
+        <div
+          className="flex items-center gap-1"
+          onClick={onClickHandler}
+          style={{
+            cursor: "pointer",
+          }}
+        >
+          <button contentEditable={false}>
             <IoDocumentTextOutline />
           </button>
 
@@ -97,8 +46,9 @@ export const createDocLink = createReactBlockSpec(
             className={
               "inline-content text-gray-800 underline underline-offset-2 transition-colors"
             }
-            ref={props.contentRef}
-          />
+          >
+            {headingText}
+          </div>
         </div>
       );
     },

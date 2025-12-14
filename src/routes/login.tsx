@@ -3,8 +3,9 @@ import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { FieldGroup, Field, FieldLabel, FieldDescription } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
+import getJwtPayload from "@/utils/getJwtPayload";
 import validateEmail from "@/utils/validateEmail";
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link, redirect, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
@@ -44,8 +45,6 @@ function Login() {
       }
       const data: LoginResponseType = await response.json();
       localStorage.setItem(import.meta.env.VITE_LOCAL_STORAGE_TOKEN_KEY, data.token);
-      localStorage.setItem(import.meta.env.VITE_LOCAL_STORAGE_ROOT_DOC_KEY, data.rootDocUrl);
-      localStorage.setItem("email", email);
       navigate({
         to: "/documents",
       });
@@ -116,4 +115,15 @@ function Login() {
 
 export const Route = createFileRoute("/login")({
   component: Login,
+  beforeLoad: async () => {
+    const { exp } = getJwtPayload();
+    if (exp) {
+      const isExpired = Date.now() >= exp * 1000; // exp is in seconds
+      if (!isExpired) {
+        throw redirect({
+          to: "/documents",
+        });
+      }
+    }
+  },
 });
