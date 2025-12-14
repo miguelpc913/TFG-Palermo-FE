@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 
 export function useBackendHealth(
   baseUrl: string = import.meta.env.VITE_API_URL,
-  intervalMs = 5000
+  intervalMs = 10000
 ) {
   const [isHealthy, setIsHealthy] = useState<boolean | null>(null); // null = checking
 
@@ -12,7 +12,7 @@ export function useBackendHealth(
     const checkHealth = async () => {
       try {
         const controller = new AbortController();
-        const timeout = setTimeout(() => controller.abort(), 2000); // 2s timeout
+        const timeout = setTimeout(() => controller.abort(), 7000); // 2s timeout
 
         const res = await fetch(`${baseUrl}`, {
           signal: controller.signal,

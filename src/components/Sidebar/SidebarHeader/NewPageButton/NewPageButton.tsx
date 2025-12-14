@@ -5,8 +5,8 @@ import { Plus } from "lucide-react";
 import createHeadingBlock from "@/utils/createBlock";
 import { Block } from "@blocknote/core";
 
-export default function NewPageButton({ docUrl }: { docUrl: AutomergeUrl }) {
-  const [__, changeDoc] = useDocument<Page>(docUrl, {
+export default function NewPageButton({ rootDocUrl }: { rootDocUrl: AutomergeUrl }) {
+  const [__, changeDoc] = useDocument<Page>(rootDocUrl, {
     suspense: true,
   });
   const repo = useRepo();

@@ -1,4 +1,4 @@
-import { SidebarGroupLabel, SidebarHeader } from "@/components/ui/sidebar";
+import { SidebarGroupLabel, SidebarHeader, SidebarMenuSkeleton } from "@/components/ui/sidebar";
 import { ChevronsUpDown, LogOut } from "lucide-react";
 import { EmailLogo } from "./EmailLogo/EmailLogo";
 import NewPageButton from "./NewPageButton/NewPageButton";
@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useNavigate } from "@tanstack/react-router";
 import getJwtPayload from "@/utils/getJwtPayload";
+import { Suspense } from "react";
 
 type Props = {
   rootDocUrl: AutomergeUrl;
@@ -60,7 +61,9 @@ export default function AppSidebarHeader({ rootDocUrl, setSearchQuery }: Props) 
           setSearchQuery(value);
         }}
       />
-      <NewPageButton docUrl={rootDocUrl} />
+      <Suspense fallback={<SidebarMenuSkeleton />}>
+        <NewPageButton rootDocUrl={rootDocUrl} />
+      </Suspense>
     </SidebarHeader>
   );
 }
