@@ -110,7 +110,8 @@ export default function useEditor({ selectedDocUrl }: Props) {
 
   useEffect(() => {
     setTimeout(() => {
-      editor.replaceBlocks(editor.document, doc.blocks || createHeadingBlock(""));
+      const initialBlocks = doc?.blocks ? doc?.blocks : [createHeadingBlock("")];
+      editor.replaceBlocks(editor.document, initialBlocks);
       if (!editor.isFocused()) {
         editor.focus();
       }

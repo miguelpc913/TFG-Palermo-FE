@@ -13,6 +13,7 @@ import { Page } from "@/types/Document";
 import SidebarNode from "./SidebarItem/SidebarNode";
 
 import AppSidebarHeader from "./SidebarHeader/AppSidebarHeader";
+import { ErrorBoundary } from "./SidebarItemErrorBoundary/SidebarItemErrorBoundary";
 
 type Props = {
   rootDocUrl: AutomergeUrl;
@@ -32,9 +33,14 @@ export default function AppSidebar({ rootDocUrl }: Props) {
               {/* Suspense since useDocument is used with suspense: true */}
               <Suspense fallback={<SidebarMenuSkeleton />}>
                 {children.map(childUrl => (
-                  <Suspense fallback={<SidebarMenuSkeleton />} key={childUrl}>
-                    <SidebarNode key={childUrl} docUrl={childUrl} searchQuery={searchQuery} />
-                  </Suspense>
+                  <ErrorBoundary
+                    onError={e => console.log("Caught by boundary:", e)}
+                    key={childUrl}
+                  >
+                    <Suspense fallback={<SidebarMenuSkeleton />}>
+                      <SidebarNode key={childUrl} docUrl={childUrl} searchQuery={searchQuery} />
+                    </Suspense>
+                  </ErrorBoundary>
                 ))}
               </Suspense>
             </SidebarMenu>

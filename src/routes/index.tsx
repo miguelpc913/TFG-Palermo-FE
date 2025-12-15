@@ -101,7 +101,7 @@ const HomePage = () => {
             <img src="/AppDemo.png" />
           </div>
         </section>
-        <section className="mx-7 md:mx-20 flex  flex-col gap-10 px-4 md:py-12  lg:flex-row lg:items-center">
+        <section className="mx-7 md:mx-20 flex  flex-col gap-10 px-4 md:py-12 pb-6  lg:flex-row lg:items-center">
           <div
             id="downloads"
             className="flex-1 space-y-4 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm"

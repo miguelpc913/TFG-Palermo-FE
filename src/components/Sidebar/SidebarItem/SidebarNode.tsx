@@ -31,7 +31,7 @@ export default function SidebarNode({ docUrl, searchQuery }: Props) {
       )}
 
       {children.length > 0 && (
-        <SidebarMenuSub>
+        <SidebarMenuSub className="mr-0 pr-0">
           {children.map(childUrl => (
             <SidebarNode searchQuery={searchQuery} key={childUrl} docUrl={childUrl} />
           ))}
