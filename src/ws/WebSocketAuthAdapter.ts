@@ -36,6 +36,32 @@ export class WebSocketAuthAdapter extends WebSocketNetworkAdapter {
     return this.#handshakePromise;
   }
 
+  // inside WebSocketAuthAdapter class
+
+  private lastMessage: FromServerMessage | null = null;
+  private listeners = new Set<() => void>();
+  getPeerId = () => this.peerId ?? null;
+
+  // React will call this to subscribe
+  subscribe = (listener: () => void) => {
+    this.listeners.add(listener);
+    return () => this.listeners.delete(listener);
+  };
+
+  // React will call this to read state
+  getSnapshot = () => {
+    return this.lastMessage;
+  };
+
+  // For SSR safety (or just reuse)
+  getServerSnapshot = () => {
+    return null;
+  };
+
+  private notify() {
+    for (const l of this.listeners) l();
+  }
+
   // reconnect
   #retryIntervalId?: TimeoutId;
 
@@ -61,6 +87,7 @@ export class WebSocketAuthAdapter extends WebSocketNetworkAdapter {
   ) {
     super();
     // this.#log = this.#log.extend(url);
+    this.getToken = opts?.getToken;
     this.getToken = opts?.getToken;
     if (typeof opts?.useProtocols === "boolean") this.useProtocols = opts.useProtocols;
   }
@@ -248,6 +275,8 @@ export class WebSocketAuthAdapter extends WebSocketNetworkAdapter {
     let message: FromServerMessage;
     try {
       message = cbor.decode(new Uint8Array(messageBytes));
+      this.lastMessage = message;
+      this.notify();
       if (message.type === "joined") {
         this.#handshakeResolver?.();
         this.#forceReady(); // optional to keep your existing api

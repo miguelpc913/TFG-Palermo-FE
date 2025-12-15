@@ -8,9 +8,9 @@ import {
 } from "@blocknote/core";
 import { useCreateBlockNote } from "@blocknote/react";
 import { useEffect, useRef } from "react";
-import isEqual from "fast-deep-equal"; // optional but helpful
 import createHeadingBlock from "@/utils/createBlock";
 import { createDocLink } from "@/components/PageBlock/PageBlock";
+import { useAutomergeDocSubscription } from "@/hooks/useAutomergeDocSubscription";
 
 type Props = {
   selectedDocUrl: AutomergeUrl;
@@ -30,27 +30,24 @@ const schema = BlockNoteSchema.create({
 
 export default function useEditor({ selectedDocUrl }: Props) {
   const [doc, changeDoc] = useDocument<Page>(selectedDocUrl, { suspense: true });
-
   const repo = useRepo();
   const editor = useCreateBlockNote({
     schema,
   });
 
-  // Avoid echoing our own programmatic updates back into Automerge:
   const applyingRemote = useRef(false);
-  const editorIsMounted = useRef(false);
-  // 1) Push Automerge -> BlockNote (remote changes)
-  useEffect(() => {
-    if (!editorIsMounted.current) return;
-    if (isEqual(editor.document, doc.blocks)) return;
 
+  const commitTimeout = useRef<number | null>(null);
+
+  useAutomergeDocSubscription<Page>(selectedDocUrl, newDoc => {
+    if (!editorCanUpdate.current) return;
+    console.log("updated");
     applyingRemote.current = true;
-    if (doc.blocks) {
-      editor.replaceBlocks(editor.document, doc.blocks);
-    }
-
+    editor.replaceBlocks(editor.document, newDoc.blocks);
     applyingRemote.current = false;
-  }, [editor, doc.blocks]);
+  });
+
+  const editorCanUpdate = useRef(false);
 
   const restoreDeletedChildren = (d: Page, editorUrls: string[]) => {
     const restoredChildrenIndex = editorUrls.findIndex(editorUrl => {
@@ -88,27 +85,38 @@ export default function useEditor({ selectedDocUrl }: Props) {
     }
   };
 
-  const saveEditor = async () => {
-    changeDoc((d: Page) => {
-      checkChildren(d);
-      d.blocks = editor.document as Block[];
-    });
+  const scheduleSave = () => {
+    if (commitTimeout.current !== null) {
+      clearTimeout(commitTimeout.current);
+    }
+
+    commitTimeout.current = window.setTimeout(() => {
+      commitTimeout.current = null;
+
+      changeDoc((d: Page) => {
+        checkChildren(d);
+        d.blocks = editor.document as Block[];
+      });
+      editorCanUpdate.current = true;
+    }, 300); // 200–500ms is typical
   };
 
   const handleEditorChange = () => {
-    if (applyingRemote.current) return; // ignore our programmatic sync
-    saveEditor();
+    if (applyingRemote.current) return;
+
+    editorCanUpdate.current = false;
+    scheduleSave();
   };
 
-  editor.onMount(() => {
+  useEffect(() => {
     setTimeout(() => {
       editor.replaceBlocks(editor.document, doc.blocks || createHeadingBlock(""));
       if (!editor.isFocused()) {
         editor.focus();
       }
-      editorIsMounted.current = true;
+      editorCanUpdate.current = true;
     });
-  });
+  }, [editor]);
 
   return {
     handleEditorChange,

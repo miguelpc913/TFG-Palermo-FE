@@ -10,12 +10,15 @@ import RepoWrapper from "@/hoc/RepoWrapper";
 import ConnectionStatus from "@/components/ConnectionStatus/ConnectionStatus";
 import getJwtPayload from "@/utils/getJwtPayload";
 import FullPageSpinner from "@/components/FullPageSpinner/FullPageSpinner";
+import { isTauri } from "@tauri-apps/api/core";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 function Documents() {
   const { rootDocUrl } = getJwtPayload();
   const repo = useRepo();
   const [doc, changeDoc] = useDocument<Page>(rootDocUrl, { suspense: true });
   const [hash, setHash] = useHash();
+  const isMobile = useIsMobile();
   const handleFirstDoc = () => {
     const newPage = repo.create<Page>();
     changeDoc((d: Page) => {
@@ -27,8 +30,6 @@ function Documents() {
     });
     setHash(newPage.url);
   };
-  console.log(rootDocUrl, "root doc");
-  console.log(hash);
   const cleanHash = hash.slice(1);
   const selectedDocUrl =
     cleanHash && isValidAutomergeUrl(cleanHash) ? (cleanHash as AutomergeUrl) : null;
@@ -47,12 +48,13 @@ function Documents() {
     }
   }, [doc?.children?.length]);
   if (!rootDocUrl) return;
+  const isAndroid = isTauri() && isMobile;
   return (
     <>
       <SidebarProvider open={true}>
         <AppSidebar rootDocUrl={rootDocUrl} />
         <main className="flex-1">
-          <div className="flex justify-between m-2 md:py-0 pt-5">
+          <div className={`flex justify-between m-2 md:py-0 pt-5 ${isAndroid ? "pt-9" : ""}`}>
             <SidebarTrigger />
             <ConnectionStatus />
           </div>
@@ -68,8 +70,6 @@ const WrappedDocuments = () => {
   const token = localStorage.getItem(import.meta.env.VITE_LOCAL_STORAGE_TOKEN_KEY);
   const { rootDocUrl } = getJwtPayload();
   if (token !== null && isValidAutomergeUrl(rootDocUrl) && rootDocUrl) {
-    console.log("tried to render repo wrapper");
-
     return (
       <RepoWrapper
         render={() => (

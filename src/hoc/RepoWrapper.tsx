@@ -1,5 +1,6 @@
 import FullPageSpinner from "@/components/FullPageSpinner/FullPageSpinner";
 import { useBackendHealth } from "@/hooks/useBackendHealth";
+import { WsProvider } from "@/providers/WsProvider";
 import { Page } from "@/types/Document";
 import { WebSocketAuthAdapter } from "@/ws/WebSocketAuthAdapter";
 import {
@@ -73,9 +74,10 @@ export default function RepoWrapper({ render, rootDocUrl }: Props) {
       findRootDoc();
     }
   }, [isHealthy]);
-  console.log(shouldRender, "repo wrapper should render");
   return shouldRender ? (
-    <RepoContext.Provider value={repo}>{render()}</RepoContext.Provider>
+    <WsProvider ws={ws}>
+      <RepoContext.Provider value={repo}>{render()}</RepoContext.Provider>
+    </WsProvider>
   ) : (
     <FullPageSpinner />
   );
