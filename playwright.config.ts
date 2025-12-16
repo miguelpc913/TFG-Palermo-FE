@@ -31,9 +31,8 @@ export default defineConfig({
   },
   webServer: {
     command: "pnpm run build && pnpm run preview",
-    // url: "http://127.0.0.1:4173",
+    // url: "http://localhost:4173", // change to your dev URL
     reuseExistingServer: !process.env.CI,
-    timeout: 120_000,
   },
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
