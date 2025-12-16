@@ -25,6 +25,8 @@ export default async function globalSetup(_: FullConfig) {
   // Clicking + waiting for navigation in a SPA: wait for URL change
   await page.getByRole("button", { name: "Login" }).click();
   await expect(page).toHaveURL(/\/documents/);
-
+  await page.context().storageState({
+    path: "playwright/.auth/user.json",
+  });
   await browser.close();
 }
