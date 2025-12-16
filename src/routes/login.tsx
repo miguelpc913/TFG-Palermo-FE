@@ -45,6 +45,7 @@ function Login() {
       }
       const data: LoginResponseType = await response.json();
       localStorage.setItem(import.meta.env.VITE_LOCAL_STORAGE_TOKEN_KEY, data.token);
+      setIsLoading(false);
       navigate({
         to: "/documents",
       });

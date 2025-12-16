@@ -1,4 +1,5 @@
 import { defineConfig, devices } from "@playwright/test";
+import "dotenv/config";
 
 /**
  * Read environment variables from file.
@@ -24,6 +25,7 @@ export default defineConfig({
   workers: 1,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   reporter: "html",
+  globalSetup: "./tests/global.setup.ts",
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
     /* Base URL to use in actions like `await page.goto('')`. */
@@ -36,25 +38,17 @@ export default defineConfig({
   /* Configure projects for major browsers */
   projects: [
     {
-      name: "setup",
-      testMatch: /auth\.setup\.ts/,
-      use: { storageState: undefined },
-    },
-    {
       name: "chromium",
-      dependencies: ["setup"],
       use: { ...devices["Desktop Chrome"], storageState: "playwright/.auth/user.json" },
     },
 
     {
       name: "firefox",
-      dependencies: ["setup"],
       use: { ...devices["Desktop Firefox"], storageState: "playwright/.auth/user.json" },
     },
 
     {
       name: "webkit",
-      dependencies: ["setup"],
       use: { ...devices["Desktop Safari"], storageState: "playwright/.auth/user.json" },
     },
 

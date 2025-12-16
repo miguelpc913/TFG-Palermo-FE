@@ -1,6 +1,6 @@
 import { expect, Page } from "@playwright/test";
 
-const APP_URL = "http://localhost:1420";
+const APP_URL = process.env.APP_URL ?? "http://localhost:1420";
 const editorLocatorString = `[contenteditable="true"][role="textbox"].bn-editor`;
 
 async function waitForAppReady(page: Page) {
