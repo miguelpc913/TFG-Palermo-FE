@@ -24,17 +24,17 @@ jobs:
           version: 10
 
       - name: install frontend dependencies
-        run: pnpm install
+        run: pnpm install --frozen-lockfile
 
       - name: Install Playwright browsers
-        run: pnpm exec playwright install --with-deps chromium
+        run: pnpm exec playwright install
 
       - name: Run production smoke tests (serial)
         env:
           APP_URL: ${{ secrets.PROD_APP_URL }}
           TEST_EMAIL: ${{ secrets.PROD_TEST_EMAIL }}
           TEST_PASSWORD: ${{ secrets.PROD_TEST_PASSWORD }}
-        run: npx playwright test
+        run: pnpm exec playwright test --config=playwright.config.ts --workers=1
 
       - name: Upload report on failure
         if: failure()
