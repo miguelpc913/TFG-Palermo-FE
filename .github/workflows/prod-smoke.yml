@@ -35,7 +35,7 @@ jobs:
           TEST_EMAIL: ${{ secrets.PROD_TEST_EMAIL }}
           TEST_PASSWORD: ${{ secrets.PROD_TEST_PASSWORD }}
         run: |
-          pnpm exec playwright test tests/production \
+          pnpm exec playwright test \
             --project=chromium \
             --workers=1 \
             --retries=0
