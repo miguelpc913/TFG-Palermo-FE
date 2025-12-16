@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+import { test, expect } from "./test.setup.delay";
 import { APP_URL, waitForAppReady, editor } from "./utils";
 
 test.beforeEach(async ({ page }) => {

@@ -1,4 +1,4 @@
-import test, { expect } from "@playwright/test";
+import { test, expect } from "./test.setup.delay";
 import { waitForAppReady, editor } from "./utils";
 
 test("Offline/reconnect: edits apply locally and stay consistent after reconnect", async ({

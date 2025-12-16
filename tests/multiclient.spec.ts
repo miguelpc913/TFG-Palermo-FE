@@ -1,4 +1,4 @@
-import test, { expect } from "@playwright/test";
+import { test, expect } from "./test.setup.delay";
 import { waitForAppReady, editor } from "./utils";
 
 test("Multi-client sync: page B receives updates from page A", async ({ browser }) => {
@@ -87,7 +87,9 @@ test("Multi-client offline -> resync updates the other client", async ({ browser
   await contextA.setOffline(false);
   await expect(pageA.getByTestId("not-connected-logo")).toHaveCount(0);
   await expect(pageA.getByTestId("syncing-logo")).toHaveCount(1);
+  await expect(pageB.getByTestId("syncing-logo")).toHaveCount(0);
   await expect(pageA.getByTestId("connected-logo")).toHaveCount(1);
+  await expect(pageB.getByTestId("syncing-logo")).toHaveCount(0);
   await expect(pageB.getByTestId("connected-logo")).toHaveCount(1);
 
   // Wait for B to receive the synced title in sidebar (and ensure no duplicates)

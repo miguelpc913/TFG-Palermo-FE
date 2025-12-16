@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+import { test, expect } from "./test.setup.delay";
 import { waitForAppReady, editor } from "./utils";
 
 test("Persistence across reload: page + content + sidebar title persist", async ({ page }) => {

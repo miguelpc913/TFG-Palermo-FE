@@ -29,11 +29,6 @@ export default defineConfig({
   expect: {
     timeout: 100000, // for expect(...).toBeVisible(), etc.
   },
-  webServer: {
-    command: "pnpm run build && pnpm run preview",
-    // url: "http://localhost:4173", // change to your dev URL
-    reuseExistingServer: !process.env.CI,
-  },
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
     /* Base URL to use in actions like `await page.goto('')`. */
