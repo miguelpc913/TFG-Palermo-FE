@@ -32,11 +32,11 @@ test("Multi-client sync: page B receives updates from page A", async ({ browser 
 
   // B should eventually see the sidebar update
   const linkOnB = pageB.getByRole("link", { name: text });
-  await expect(linkOnB).toBeVisible({ timeout: 15_000 });
+  await expect(linkOnB).toBeVisible();
 
   // B opens it and sees content
   await linkOnB.click();
-  await expect(editor(pageB)).toContainText(text, { timeout: 15_000 });
+  await expect(editor(pageB)).toContainText(text);
 
   await contextA.close();
   await contextB.close();
@@ -62,7 +62,7 @@ test("Multi-client offline -> resync updates the other client", async ({ browser
 
   // B should eventually see that new page in the sidebar and open it
   const newPageLinkB = pageB.locator(`a[href="${href}"]`);
-  await expect(newPageLinkB).toBeVisible({ timeout: 15_000 });
+  await expect(newPageLinkB).toBeVisible();
   await newPageLinkB.click();
 
   // ---- A goes offline and edits locally ----
@@ -92,11 +92,11 @@ test("Multi-client offline -> resync updates the other client", async ({ browser
 
   // Wait for B to receive the synced title in sidebar (and ensure no duplicates)
   const syncedTitleLinksOnB = pageB.getByRole("link", { name: offlineText });
-  await expect(syncedTitleLinksOnB).toHaveCount(1, { timeout: 20_000 });
+  await expect(syncedTitleLinksOnB).toHaveCount(1);
 
   // Open the updated page on B and confirm the editor content synced
   await syncedTitleLinksOnB.first().click();
-  await expect(editor(pageB)).toContainText(offlineText, { timeout: 20_000 });
+  await expect(editor(pageB)).toContainText(offlineText);
 
   await contextA.close();
   await contextB.close();

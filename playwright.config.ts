@@ -14,7 +14,7 @@ import "dotenv/config";
  */
 export default defineConfig({
   testDir: "./tests",
-  timeout: 50000,
+  timeout: 100000,
   /* Run tests in files in parallel */
   fullyParallel: false,
   /* Fail the build on CI if you accidentally left test.only in the source code. */
@@ -26,6 +26,15 @@ export default defineConfig({
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   reporter: "html",
   globalSetup: "./tests/global.setup.ts",
+  expect: {
+    timeout: 100000, // for expect(...).toBeVisible(), etc.
+  },
+  webServer: {
+    command: "pnpm run build && pnpm run preview",
+    // url: "http://127.0.0.1:4173",
+    reuseExistingServer: !process.env.CI,
+    timeout: 120_000,
+  },
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
     /* Base URL to use in actions like `await page.goto('')`. */

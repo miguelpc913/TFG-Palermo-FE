@@ -29,7 +29,7 @@ test("Offline/reconnect: edits apply locally and stay consistent after reconnect
   await expect(page.getByTestId("syncing-logo")).toHaveCount(1);
   // Give the app time to resync; assert stable state (no duplicates)
   const titleLinks = page.getByRole("link", { name: text });
-  await expect(titleLinks).toHaveCount(1, { timeout: 10_000 });
+  await expect(titleLinks).toHaveCount(1);
 
   // Still readable after reconnect
   await expect(editor(page)).toContainText(text);

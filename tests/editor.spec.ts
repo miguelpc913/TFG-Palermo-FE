@@ -60,11 +60,16 @@ test("Create a new page and open it", async ({ page }) => {
   // Go back to parent via title
   await page.getByRole("link", { name: mergepadString }).last().click();
   await expect(ed).toContainText(mergepadString);
+  await expect(ed).toContainText("Untitled page");
 
   // Delete a few chars then ensure child link disappears
   await ed.click();
+  await ed.focus();
   await ed.press("End");
-  await page.keyboard.press("Delete");
-  await page.keyboard.press("Delete");
+  await ed.press("Delete");
+  await ed.press("Delete");
+  await ed.press("Delete");
+  await ed.press("Delete");
+  await expect(ed).not.toContainText("Untitled page");
   await page.locator(`[href="${newChildPageUrl}"]`).waitFor({ state: "detached" });
 });

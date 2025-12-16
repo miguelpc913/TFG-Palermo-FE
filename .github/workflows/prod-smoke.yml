@@ -34,7 +34,7 @@ jobs:
           APP_URL: ${{ secrets.PROD_APP_URL }}
           TEST_EMAIL: ${{ secrets.PROD_TEST_EMAIL }}
           TEST_PASSWORD: ${{ secrets.PROD_TEST_PASSWORD }}
-        run: pnpm exec playwright test --project=chromium --workers=1
+        run: pnpm exec playwright test --config=playwright.config.ts --workers=1 --project=chromium
 
       - name: Upload report on failure
         if: failure()
