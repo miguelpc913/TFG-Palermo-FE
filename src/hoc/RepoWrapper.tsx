@@ -22,6 +22,8 @@ const repo = new Repo({
   storage: new IndexedDBStorageAdapter(),
 });
 
+window.addEventListener("beforeunload", () => ws.disconnect());
+
 // Add the repo to the global window object so it can be accessed in the browser console
 // This is useful for debugging and testing purposes.
 declare global {
