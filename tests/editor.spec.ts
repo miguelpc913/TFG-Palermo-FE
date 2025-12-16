@@ -1,30 +1,70 @@
 import { test, expect } from "@playwright/test";
+import { APP_URL, waitForAppReady, editor } from "./utils";
 
 test.beforeEach(async ({ page }) => {
-  await page.goto("http://localhost:1420/documents", {
-    waitUntil: "domcontentloaded",
-  });
+  await waitForAppReady(page);
 });
 
-test("shell loads (sidebar + editor)", async ({ page }) => {
+test("Shell loads (sidebar + editor)", async ({ page }) => {
   await expect(page.getByRole("button", { name: "Toggle Sidebar" })).toBeVisible();
   await expect(page.getByPlaceholder("Search the docs...")).toBeVisible();
   await expect(page.getByRole("button", { name: "New page" })).toBeVisible();
-  const editor = page.locator('[contenteditable="true"][role="textbox"].bn-editor');
-  await expect(editor).toBeVisible();
+
+  await expect(editor(page)).toBeVisible();
 });
 
-test("create a new page and open it", async ({ page }) => {
+test("Search for docs", async ({ page }) => {
+  const search = page.getByPlaceholder("Search the docs...");
+
+  await search.fill("For search");
+
+  await expect(page.getByRole("link", { name: "For search" })).toHaveCount(2);
+});
+
+test("Create a new page and open it", async ({ page }) => {
   await page.getByRole("button", { name: "New page" }).click();
+
   const newPageLink = page.getByRole("link", { name: "Untitled page" }).last();
   await expect(newPageLink).toBeVisible();
-  await expect(page).toHaveURL(/#automerge:/);
-});
 
-test("type in editor", async ({ page }) => {
-  const editor = page.locator('[contenteditable="true"][role="textbox"].bn-editor');
-  await editor.click();
-  await page.keyboard.type("Hello Mergepad");
+  const newPageUrl = await newPageLink.getAttribute("href");
+  expect(newPageUrl).toBeTruthy();
 
-  await expect(editor).toContainText("Hello Mergepad");
+  // Actually open it (otherwise URL might not change)
+  await newPageLink.click();
+  await expect(page).toHaveURL(`${APP_URL}/documents${newPageUrl}`);
+
+  const ed = editor(page);
+  await ed.click();
+  const mergepadString = `Hello Mergepad ${Date.now()}`;
+  await page.keyboard.type(mergepadString);
+  await expect(ed).toContainText(mergepadString);
+  await expect(page.getByRole("link", { name: mergepadString })).toBeVisible();
+
+  // Create child via slash command
+  await page.keyboard.press("Enter");
+  await page.keyboard.type("/create");
+  await page.keyboard.press("Enter");
+  await expect(ed).not.toContainText(mergepadString);
+
+  const newChildLink = page.getByRole("link", { name: "Untitled page" }).last();
+  await expect(newChildLink).toBeVisible();
+
+  const newChildPageUrl = await newChildLink.getAttribute("href");
+  expect(newChildPageUrl).toBeTruthy();
+
+  // Open child to assert navigation
+  await newChildLink.click();
+  await expect(page).toHaveURL(`${APP_URL}/documents${newChildPageUrl}`);
+
+  // Go back to parent via title
+  await page.getByRole("link", { name: mergepadString }).last().click();
+  await expect(ed).toContainText(mergepadString);
+
+  // Delete a few chars then ensure child link disappears
+  await ed.click();
+  await ed.press("End");
+  await page.keyboard.press("Delete");
+  await page.keyboard.press("Delete");
+  await page.locator(`[href="${newChildPageUrl}"]`).waitFor({ state: "detached" });
 });

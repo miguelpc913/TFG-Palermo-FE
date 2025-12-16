@@ -1,10 +1,11 @@
 import { test, expect } from "@playwright/test";
+import { APP_URL } from "./utils";
 
 test("auth: login and save storage state", async ({ page }) => {
-  await page.goto("http://localhost:1420/", { waitUntil: "domcontentloaded" });
+  await page.goto(`${APP_URL}/`, { waitUntil: "domcontentloaded" });
 
   await page.getByRole("link", { name: "Log in" }).click();
-  await expect(page).toHaveURL("http://localhost:1420/login");
+  await expect(page).toHaveURL(`${APP_URL}/login`);
 
   // Prefer getByLabel if you can. If not, keep your role selectors.
   await page.getByRole("textbox", { name: "email" }).fill("2e2account@mergepad.com");

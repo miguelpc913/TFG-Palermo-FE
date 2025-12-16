@@ -20,8 +20,8 @@ type Props = {
 };
 
 export default function AppSidebar({ rootDocUrl }: Props) {
-  const [root] = useDocument<Page>(rootDocUrl, { suspense: true });
-  const children: AutomergeUrl[] = root?.children || [];
+  const [rootDoc, changeRootDoc] = useDocument<Page>(rootDocUrl, { suspense: true });
+  const children: AutomergeUrl[] = rootDoc?.children || [];
   const [searchQuery, setSearchQuery] = useState("");
   return (
     <Sidebar>
@@ -34,10 +34,20 @@ export default function AppSidebar({ rootDocUrl }: Props) {
               <Suspense fallback={<SidebarMenuSkeleton />}>
                 {children.map(childUrl => (
                   <ErrorBoundary
-                    onError={e => console.log("Caught by boundary:", e)}
+                    onError={e => {
+                      changeRootDoc(d => {
+                        const indexToDelete = d.children.findIndex(url => url === childUrl);
+                        if (indexToDelete > -1) {
+                          d.children.splice(indexToDelete, 1);
+                        }
+                      });
+                      console.log("Caught by boundary:", e);
+                    }}
                     key={childUrl}
                   >
-                    <Suspense fallback={<SidebarMenuSkeleton />}>
+                    <Suspense
+                      fallback={<SidebarMenuSkeleton data-testid={"sidebar-skeleton-menu-item"} />}
+                    >
                       <SidebarNode key={childUrl} docUrl={childUrl} searchQuery={searchQuery} />
                     </Suspense>
                   </ErrorBoundary>

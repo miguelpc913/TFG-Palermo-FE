@@ -2,12 +2,14 @@ import { SidebarMenuItem, SidebarMenuButton, SidebarMenuSub } from "@/components
 import { AutomergeUrl, useDocument } from "@automerge/react";
 import { Page } from "@/types/Document";
 import { useHash } from "react-use";
+import { useEffect, useState } from "react";
 
 type Props = { docUrl: AutomergeUrl; searchQuery: string };
 
 export default function SidebarNode({ docUrl, searchQuery }: Props) {
   const [doc] = useDocument<Page>(docUrl, { suspense: true });
   const [hash] = useHash();
+  const [isNotResult, setIsNotResult] = useState(false);
 
   const title =
     doc?.blocks?.[0]?.type === "heading" && doc?.blocks?.[0]?.content?.[0]?.text
@@ -15,8 +17,12 @@ export default function SidebarNode({ docUrl, searchQuery }: Props) {
       : "Untitled page";
 
   const children = doc?.children || [];
-  const isNotResult =
-    searchQuery && searchQuery.trim().length > 0 && !title.toLowerCase().includes(searchQuery);
+  useEffect(() => {
+    const isNotResult =
+      searchQuery.trim().length > 0 && !title.toLowerCase().includes(searchQuery.toLowerCase());
+
+    setIsNotResult(isNotResult);
+  }, [searchQuery, title]);
   const isSelected = hash.replace("#", "") === docUrl;
   return (
     <>
