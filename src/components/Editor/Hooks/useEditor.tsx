@@ -113,7 +113,9 @@ export default function useEditor({ selectedDocUrl }: Props) {
 
         // 2) blocks -> spans -> updateSpans into richText
         const spans = blockNoteBlocksToAutomergeSpans(editor.document as any);
-
+        if (!d.richText) {
+          d.richText = "";
+        }
         Automerge.updateSpans(d, ["richText"], spans as any);
 
         // 3) apply marks (updateSpans doesn't)

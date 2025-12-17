@@ -28,7 +28,6 @@ function Documents() {
         d.children = [newPage.url];
       }
     });
-    setHash(newPage.url);
   };
   const cleanHash = hash.slice(1);
   const selectedDocUrl =
@@ -41,7 +40,7 @@ function Documents() {
       }
       return;
     }
-  }, [selectedDocUrl]);
+  }, [selectedDocUrl, doc?.children?.[0]]);
   useEffect(() => {
     if (typeof doc.children === "undefined" || doc.children.length === 0) {
       handleFirstDoc();
