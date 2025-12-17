@@ -1,8 +1,7 @@
-import { AutomergeUrl } from "@automerge/react/slim";
-import { Block } from "@blocknote/core";
+import { AutomergeUrl } from "@automerge/react";
 
 export type Page = {
-  blocks: Block[];
+  richText: string;
   parent?: AutomergeUrl;
   children: AutomergeUrl[];
 };

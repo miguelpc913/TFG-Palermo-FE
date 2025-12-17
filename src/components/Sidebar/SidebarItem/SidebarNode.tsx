@@ -3,6 +3,11 @@ import { AutomergeUrl, useDocument } from "@automerge/react";
 import { Page } from "@/types/Document";
 import { useHash } from "react-use";
 import { useEffect, useState } from "react";
+import {
+  AMSpan,
+  spansToBlockNoteBlocks,
+} from "@/components/Editor/Utils/blocknoteAutomergeIntegration";
+import * as Automerge from "@automerge/automerge";
 
 type Props = { docUrl: AutomergeUrl; searchQuery: string };
 
@@ -10,10 +15,11 @@ export default function SidebarNode({ docUrl, searchQuery }: Props) {
   const [doc] = useDocument<Page>(docUrl, { suspense: true });
   const [hash] = useHash();
   const [isNotResult, setIsNotResult] = useState(false);
-
+  const spans = doc?.richText ? (Automerge.spans(doc as any, ["richText"]) as AMSpan[]) : [];
+  const docBlocks = spansToBlockNoteBlocks(spans);
   const title =
-    doc?.blocks?.[0]?.type === "heading" && doc?.blocks?.[0]?.content?.[0]?.text
-      ? (doc.blocks[0].content[0].text as string)
+    docBlocks[0]?.type === "heading" && docBlocks[0]?.content?.[0]?.text
+      ? (docBlocks[0].content[0].text as string)
       : "Untitled page";
 
   const children = doc?.children || [];

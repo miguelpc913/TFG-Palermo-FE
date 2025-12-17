@@ -12,8 +12,9 @@ const insertNewPageBlock = (
 ) => ({
   title: "Create new page",
   onItemClick: async () => {
-    const headingBlock = createHeadingBlock("") as Block;
-    const newPage = repo.create<Page>({ children: [], blocks: [headingBlock] });
+    // const headingBlock = createHeadingBlock("") as Block;
+    // const spans = blockNoteBlocksToAutomergeSpans([headingBlock]);
+    const newPage = repo.create<Page>({ children: [], richText: "" });
     changeDoc(d => {
       d.children ? d.children.push(newPage.url) : (d.children = [newPage.url]);
     });

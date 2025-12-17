@@ -1,13 +1,15 @@
 import { useBackendHealth } from "@/hooks/useBackendHealth";
 import { useWsLastMessage } from "@/hooks/useWsLastMessage";
+import { WsContext } from "@/providers/WsProvider";
 import { Wifi, WifiOff, WifiSync } from "lucide-react";
-import { useRef, useState, useEffect } from "react";
+import { useRef, useState, useEffect, useContext } from "react";
 
 export default function ConnectionStatus() {
   const isHealthy = useBackendHealth(import.meta.env.VITE_API_URL);
   const lastSyncAt = useRef<number | null>(null);
   const [isSyncing, setIsSyncing] = useState(false);
   const lastMessage = useWsLastMessage();
+
   useEffect(() => {
     if (lastMessage?.type !== "sync") return;
 

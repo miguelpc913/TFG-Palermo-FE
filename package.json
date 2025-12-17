@@ -10,6 +10,7 @@
     "tauri": "tauri"
   },
   "dependencies": {
+    "@automerge/automerge": "^3.2.1",
     "@automerge/react": "^2.3.1",
     "@blocknote/core": "^0.41.0",
     "@blocknote/mantine": "^0.41.0",

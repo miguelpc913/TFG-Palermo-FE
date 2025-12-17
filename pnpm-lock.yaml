@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      '@automerge/automerge':
+        specifier: ^3.2.1
+        version: 3.2.1
       '@automerge/react':
         specifier: ^2.3.1
         version: 2.3.1(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
@@ -169,8 +172,8 @@ packages:
   '@automerge/automerge-repo@2.3.1':
     resolution: {integrity: sha512-ZQ6jdwSsdjAiQoT+1vAvmMRcXaxtMv4PH298x9VSVPD5o5N0nNUweE2HuAsNNrXleZ/apfG2vH8uYentSQQFvQ==}
 
-  '@automerge/automerge@3.2.0':
-    resolution: {integrity: sha512-ANav4cdVYn7TrpeN28fAu9vpWxu8GWwpMJM2JjtfxFULTQnbFCK4y0Wmdk3zaiNgvYSGK0pkbYfCOrxVpXic8w==}
+  '@automerge/automerge@3.2.1':
+    resolution: {integrity: sha512-xsEZlZe8lWyVCbD7Z7roH4X6ZKlRxMmmumb0M5CuxJWptUEfYsf+1z9lFEJh4aDBbWTLAgxsXd+TBi6jKTj0+g==}
 
   '@automerge/react@2.3.1':
     resolution: {integrity: sha512-GXxMxqnmiRY8K9bvuBpL7MG08kCQ7q0cnu4YvgWZxRpWTJEBviyAc7A5ytHArqMpkPnTGNYZZXASud61uU7U/w==}
@@ -3123,7 +3126,7 @@ snapshots:
 
   '@automerge/automerge-repo-react-hooks@2.3.1(react-dom@19.1.1(react@19.1.1))(react@19.1.1)':
     dependencies:
-      '@automerge/automerge': 3.2.0
+      '@automerge/automerge': 3.2.1
       '@automerge/automerge-repo': 2.3.1
       eventemitter3: 5.0.1
       react: 19.1.1
@@ -3140,7 +3143,7 @@ snapshots:
 
   '@automerge/automerge-repo@2.3.1':
     dependencies:
-      '@automerge/automerge': 3.2.0
+      '@automerge/automerge': 3.2.1
       bs58check: 3.0.1
       cbor-x: 1.6.0
       debug: 4.4.1
@@ -3151,7 +3154,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@automerge/automerge@3.2.0': {}
+  '@automerge/automerge@3.2.1': {}
 
   '@automerge/react@2.3.1(react-dom@19.1.1(react@19.1.1))(react@19.1.1)':
     dependencies:

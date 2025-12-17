@@ -20,7 +20,7 @@ function Documents() {
   const [hash, setHash] = useHash();
   const isMobile = useIsMobile();
   const handleFirstDoc = () => {
-    const newPage = repo.create<Page>();
+    const newPage = repo.create<Page>({ richText: "" });
     changeDoc((d: Page) => {
       if (d.children && d.children.length === 0) {
         d.children.push(newPage.url);

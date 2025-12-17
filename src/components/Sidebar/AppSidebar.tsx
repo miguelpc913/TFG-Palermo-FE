@@ -23,6 +23,7 @@ export default function AppSidebar({ rootDocUrl }: Props) {
   const [rootDoc, changeRootDoc] = useDocument<Page>(rootDocUrl, { suspense: true });
   const children: AutomergeUrl[] = rootDoc?.children || [];
   const [searchQuery, setSearchQuery] = useState("");
+
   return (
     <Sidebar>
       <AppSidebarHeader rootDocUrl={rootDocUrl} setSearchQuery={setSearchQuery} />
