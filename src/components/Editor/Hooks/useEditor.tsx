@@ -11,6 +11,7 @@ import { useEffect, useRef } from "react";
 import createHeadingBlock from "@/utils/createBlock";
 import { createDocLink } from "@/components/PageBlock/PageBlock";
 import { useAutomergeDocSubscription } from "@/hooks/useAutomergeDocSubscription";
+import merge from "deepmerge-json";
 
 type Props = {
   selectedDocUrl: AutomergeUrl;
@@ -41,9 +42,18 @@ export default function useEditor({ selectedDocUrl }: Props) {
 
   useAutomergeDocSubscription<Page>(selectedDocUrl, newDoc => {
     if (!editorCanUpdate.current) return;
-    console.log("updated");
     applyingRemote.current = true;
-    editor.replaceBlocks(editor.document, newDoc.blocks);
+    const mergedResults: Block[] = merge(editor.document, newDoc.blocks);
+
+    const cursorPos = editor.getTextCursorPosition();
+
+    editor.replaceBlocks(editor.document, mergedResults);
+    if (cursorPos) {
+      const focusedBlock = mergedResults.find(block => block.id === cursorPos.block.id);
+      if (focusedBlock) {
+        editor.setTextCursorPosition(focusedBlock, "end");
+      }
+    }
     applyingRemote.current = false;
   });
 
